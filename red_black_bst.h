@@ -7,7 +7,8 @@
 
 #include <stdlib.h>
 #include "binary_search_tree.h"
-#include "quicksort.h"
+//#include "quicksort.h"
+#include "heapsort.h"
 
 
 namespace KAGU {
@@ -49,6 +50,8 @@ namespace KAGU {
         void free_nodes(bst_node <X> *node);
 
 
+        bst_node<X> * make_balanced_tree(X *sorted_arr, size_t size);
+
         void insert_repair(rb_bst_node<X> *node);
 
         void remove_node(bst_node <X> *node);
@@ -78,9 +81,13 @@ namespace KAGU {
 
     template<typename X>
     red_black_binary_search_tree<X>::red_black_binary_search_tree(X *arr, size_t size):binary_search_tree<X>() {
-        for (size_t i = 0; i < size; ++i) {
-            this->insert(arr[i]);
-        }
+//        for (size_t i = 0; i < size; ++i) {
+//            this->insert(arr[i]);
+//        }
+
+//        quicksort(arr, size, true, false);
+        heapsort(arr, size);
+        this->make_balanced_tree(arr, size);
     };
 
     template<typename X>
@@ -89,6 +96,28 @@ namespace KAGU {
             this->free_nodes(this->get_root());
             this->set_root(NULL);
         }
+    }
+
+    template<typename X>
+    bst_node<X> *red_black_binary_search_tree<X>::make_balanced_tree(X *sorted_arr, size_t size) {
+        if (size > 2) {
+            size_t middle = size / 2 + 1;
+            bst_node<X> *output = this->insert(sorted_arr[middle]);
+
+            this->make_balanced_tree(sorted_arr, middle);
+
+
+            this->make_balanced_tree(sorted_arr + middle + 1, size - (middle + 1));
+
+            return output;
+        } else if (size > 0) {
+            bst_node<X> *output = this->insert(sorted_arr[0]);
+            if (size > 1) {
+                this->insert(sorted_arr[1]);
+            }
+            return output;
+        }
+        return NULL;
     }
 
 

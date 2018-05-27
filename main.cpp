@@ -50,6 +50,7 @@ int main() {
         }
         int stop_s = clock();
         std::cout << " CQ Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+                  << " ms"
                   << std::endl;
     }
     std::cout << "Finished running time complexity tests on Circular Queue " << std::endl << std::endl;
@@ -67,7 +68,7 @@ int main() {
             temp_q.get();
         }
         int stop_s = clock();
-        std::cout << " Q Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+        std::cout << " Q Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms"
                   << std::endl;
     }
     std::cout << "Finished running time complexity tests on Queue " << std::endl << std::endl;
@@ -86,6 +87,7 @@ int main() {
         }
         int stop_s = clock();
         std::cout << " PQ Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+                  << " ms"
                   << std::endl;
     }
     std::cout << "Finished running time complexity tests on Priority Queue " << std::endl << std::endl;
@@ -102,7 +104,7 @@ int main() {
             temp_q.heappop();
         }
         int stop_s = clock();
-        std::cout << "HP Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+        std::cout << "HP Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms"
                   << std::endl;
     }
     std::cout << "Finished running time complexity tests on Heap " << std::endl << std::endl;
@@ -119,7 +121,7 @@ int main() {
             temp_q.pop();
         }
         int stop_s = clock();
-        std::cout << "ST Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+        std::cout << "ST Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms"
                   << std::endl;
     }
     std::cout << "Finished running time complexity tests on Stack " << std::endl << std::endl;
@@ -152,6 +154,7 @@ int main() {
         heapsort(arr, i * 1000, false);
         int stop_s = clock();
         std::cout << "Arr Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+                  << " ms"
                   << std::endl;
         free(arr);
     }
@@ -202,7 +205,8 @@ int main() {
 
         double t2 = (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000;
 
-        std::cout << "Arr Size: " << i * 1000 << " time (iter) : " << t1 << " time (recu) : " << t2 << std::endl;
+        std::cout << "Arr Size: " << i * 1000 << " time (iter) : " << t1 << " ms" << " time (recu) : " << t2 << " ms"
+                  << std::endl;
         free(arr);
         free(arr2);
     }
@@ -232,7 +236,45 @@ int main() {
 
         double t2 = (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000;
 
-        std::cout << "Arr Size: " << i * 1000 << " time (qs iter) : " << t1 << " time (hs) : " << t2 << std::endl;
+        std::cout << "Arr Size: " << i * 1000 << " time (qs iter) : " << t1 << " ms" << " time (hs) : " << t2 << " ms"
+                  << std::endl;
+        free(arr);
+        free(arr2);
+    }
+    std::cout << "Finished running time complexity comparisons of Quicksort and Heapsort " << std::endl << std::endl;
+
+
+    std::cout << "Comparing worst case time complexity of Heapsort and Quicksort " << std::endl;
+    for (int i = 1; i < 11; ++i) {
+        int *arr = (int *) calloc(i * 1000, sizeof(int));
+        int *arr2 = (int *) calloc(i * 1000, sizeof(int));
+
+        for (int j = 0; j < i * 1000; ++j) {
+            arr[j] = dis(gen);
+//            arr2[j] = arr[j];
+        }
+
+        quicksort(arr,i * 1000, false, false);
+        for (int j = 0; j < i * 1000; ++j) {
+            arr2[j] = arr[j];
+        }
+
+        int start_s = clock();
+
+        quicksort(arr, i * 1000, false, false);
+        int stop_s = clock();
+
+        double t1 = (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000;
+
+        start_s = clock();
+
+        heapsort(arr2, i * 1000, false);
+        stop_s = clock();
+
+        double t2 = (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000;
+
+        std::cout << "Arr Size: " << i * 1000 << " time (qs iter) : " << t1 << " ms" << " time (hs) : " << t2 << " ms"
+                  << std::endl;
         free(arr);
         free(arr2);
     }
@@ -250,8 +292,14 @@ int main() {
     int arr1[] = {99, 3, 9, 3, 7, 1, 8, 9, 11, 21, 33, 59, 219, 7, 11};
 
     red_black_binary_search_tree<int> *bst = new red_black_binary_search_tree<int>(arr1, sizeof(arr1) / sizeof(int));
+    //arr1,
 
-    bst->print_traversal_results();
+//    for (int i = 0; i <  sizeof(arr1) / sizeof(int); i++ ){
+//        bst->insert(arr1[i]);
+//    }
+
+    std::cout << " In-order tree traversal : " << std::endl;
+    bst->print_traversal_results();//binary_search_tree<int>::PREORDER);
 
     std::cout << " Removing 9" << std::endl;
     bst->remove(9);
@@ -276,12 +324,15 @@ int main() {
 
     std::cout << (bst->find(12) != NULL) << std::endl;
 
+    std::cout << "Done with Red Black BST demo." << std::endl << std::endl;
 
+    std::cout << "Running tests on normal Binary Search Tree intialized using an array of " << gen_size << " integers."
+              << std::endl;
     int start_s = clock();
     binary_search_tree<int> *binary_search_tree1 = new binary_search_tree<int>(arr, gen_size);
 
     int stop_s = clock();
-    std::cout << "Insert time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << std::endl;
+    std::cout << "Insert time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
 
 
     start_s = clock();
@@ -292,22 +343,26 @@ int main() {
 
     binary_search_tree1->find(arr[10]);
     stop_s = clock();
-    std::cout << "Find time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << std::endl;
+    std::cout << "Find time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
 
     start_s = clock();
     for (int i = 0; i < gen_size; i++) {
         binary_search_tree1->remove(arr[i]);
     }
     stop_s = clock();
-    std::cout << "Remove time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << std::endl;
 
+    std::cout << "Remove time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Running tests on Red Black Binary Search Tree intialized using the same array of " << gen_size
+              << " integers." << std::endl;
 
     start_s = clock();
 
 
     red_black_binary_search_tree<int> *binary_search_tree2 = new red_black_binary_search_tree<int>(arr, gen_size);
     stop_s = clock();
-    std::cout << "Insert time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << std::endl;
+    std::cout << "Insert time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
 
 
     start_s = clock();
@@ -318,14 +373,16 @@ int main() {
 
 
     stop_s = clock();
-    std::cout << "Find time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << std::endl;
+    std::cout << "Find time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
 
     start_s = clock();
     for (int i = 0; i < gen_size; i++) {
         binary_search_tree2->remove(arr[i]);
     }
     stop_s = clock();
-    std::cout << "Remove time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << std::endl;
+    std::cout << "Remove time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
+
+    std::cout << std::endl;
 
     return 0;
 }

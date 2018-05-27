@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <exception>
 #include <iostream>
-#include "quicksort.h"
-
+//#include "quicksort.h"
+#include "heapsort.h"
 
 namespace KAGU {
 
@@ -41,7 +41,7 @@ namespace KAGU {
 
         virtual bool remove(X a);
 
-        void print_traversal_results(int traversal_type = binary_search_tree<X>::INORDER, bst_node<X> *node = NULL);
+        virtual void print_traversal_results(int traversal_type = binary_search_tree<X>::INORDER, bst_node<X> *node = NULL);
 
     protected:
 
@@ -95,7 +95,8 @@ namespace KAGU {
     binary_search_tree<X>::binary_search_tree(X *arr, size_t size) {
         this->set_root(NULL);
 
-        quicksort(arr, size);
+//        quicksort(arr, size);
+        heapsort(arr, size);
 
         this->set_root(this->make_balanced_tree(arr, size));
     }
