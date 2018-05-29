@@ -27,7 +27,7 @@ namespace KAGU {
 
         ~red_black_binary_search_tree();
 
-        bst_node <X> *insert(X a);
+        bst_node <X> *insert(const X &a);
 
     protected:
 
@@ -40,19 +40,19 @@ namespace KAGU {
 
         rb_bst_node<X> *get_grand_parent(rb_bst_node<X> *node);
 
-        bool rotate_left(rb_bst_node<X> *node);
+        virtual bool rotate_left(rb_bst_node<X> *node);
 
-        bool rotate_right(rb_bst_node<X> *node);
+        virtual bool rotate_right(rb_bst_node<X> *node);
 
 
-        bst_node <X> *make_node(X val, bst_node <X> *parent = NULL);
+        bst_node <X> *create_node(const X &val, bst_node <X> *parent = NULL);
 
         void free_nodes(bst_node <X> *node);
 
 
         bst_node<X> * make_balanced_tree(X *sorted_arr, size_t size);
 
-        void insert_repair(rb_bst_node<X> *node);
+        virtual void insert_repair(rb_bst_node<X> *node);
 
         void remove_node(bst_node <X> *node);
 
@@ -122,7 +122,7 @@ namespace KAGU {
 
 
     template<typename X>
-    bst_node <X> *red_black_binary_search_tree<X>::make_node(X val, bst_node <X> *parent) {
+    bst_node <X> *red_black_binary_search_tree<X>::create_node(const X &val, bst_node <X> *parent) {
         try {
             rb_bst_node<X> *node = (rb_bst_node<X> *) calloc(sizeof(rb_bst_node<X>), 1);
             node->key = val;
@@ -281,33 +281,9 @@ namespace KAGU {
     }
 
     template<typename X>
-    bst_node <X> *red_black_binary_search_tree<X>::insert(X a) {
-        rb_bst_node<X> *cur = (rb_bst_node<X> *) this->get_root(), *assigned = NULL;
-        if (cur == NULL) {
-            this->set_root(this->make_node(a));
-            assigned = (rb_bst_node<X> *) this->get_root();
-        } else {
-
-            while (true) {
-                if (cur->key > a) {
-                    if (cur->left == NULL) {
-                        cur->left = this->make_node(a, cur);
-                        assigned = (rb_bst_node<X> *) cur->left;
-                        break;
-                    } else {
-                        cur = (rb_bst_node<X> *) cur->left;
-                    }
-                } else {
-                    if (cur->right == NULL) {
-                        cur->right = this->make_node(a, cur);
-                        assigned = (rb_bst_node<X> *) cur->right;
-                        break;
-                    } else {
-                        cur = (rb_bst_node<X> *) cur->right;
-                    }
-                }
-            }
-        }
+    bst_node <X> *red_black_binary_search_tree<X>::insert(const X &a) {
+        rb_bst_node<X> *assigned;
+        assigned = (rb_bst_node<X> *)binary_search_tree<X>::insert(a);
         //Now to fix colors
         this->insert_repair(assigned);
         return assigned;

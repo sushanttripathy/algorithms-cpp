@@ -19,7 +19,7 @@ namespace KAGU {
 
         ~stack();
 
-        void push(X x);
+        void push(const X &x);
 
         X pop();
 
@@ -62,7 +62,7 @@ namespace KAGU {
 #endif
 
     template<typename X>
-    void stack<X>::push(X x) {
+    void stack<X>::push(const X &x) {
         if (this->contents < this->capacity) {
             this->arr[this->contents] = x;
             ++this->contents;

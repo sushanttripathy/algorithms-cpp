@@ -20,7 +20,7 @@ namespace KAGU {
 
         ~priority_queue();
 
-        void put(X x, Y priority);
+        void put(const X &x, const Y &priority);
 
         X get(Y &priority);
 
@@ -78,7 +78,7 @@ namespace KAGU {
 #endif
 
     template<typename X, typename Y>
-    void priority_queue<X, Y>::put(X x, Y priority) {
+    void priority_queue<X, Y>::put(const X &x, const Y &priority) {
         if (this->contents < this->capacity) {
             this->arr[this->contents] = x;
             this->arr2[this->contents] = priority;

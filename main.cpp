@@ -9,10 +9,14 @@
 #include "quicksort.h"
 #include "binary_search_tree.h"
 #include "red_black_bst.h"
+#include "interval_tree.h"
 
 
 #include <ctime>
 #include <random>
+#include <queue>
+#include <stack>
+
 
 using namespace KAGU;
 
@@ -36,6 +40,24 @@ int main() {
         heap1.heappush(5);
         pq.put(float(i) / 10.0, i);
     }
+
+    std::cout << "Running time complexity tests on STL Queue " << std::endl;
+    for (int i = 1; i < 11; ++i) {
+        std::queue<int> temp_q;
+        int start_s = clock();
+
+        for (int j = 0; j < i * 1000; ++j) {
+            temp_q.push(j);
+        }
+        while (!temp_q.empty()) {
+            temp_q.pop();
+        }
+        int stop_s = clock();
+        std::cout << " CQ Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+                  << " ms"
+                  << std::endl;
+    }
+    std::cout << "Finished running time complexity tests on Circular Queue " << std::endl << std::endl;
 
     std::cout << "Running time complexity tests on Circular Queue " << std::endl;
     for (int i = 1; i < 11; ++i) {
@@ -74,6 +96,24 @@ int main() {
     std::cout << "Finished running time complexity tests on Queue " << std::endl << std::endl;
 
 
+    std::cout << "Running time complexity tests on STL Priority Queue " << std::endl;
+    for (int i = 1; i < 11; ++i) {
+        std::priority_queue<std::pair<float, int>> temp_q;
+        int start_s = clock();
+
+        for (int j = 0; j < i * 1000; ++j) {
+            temp_q.push(std::pair<float, int>((float) j, j));
+        }
+        while (!temp_q.empty()) {
+            temp_q.pop();
+        }
+        int stop_s = clock();
+        std::cout << " PQ Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+                  << " ms"
+                  << std::endl;
+    }
+    std::cout << "Finished running time complexity tests on Priority Queue " << std::endl << std::endl;
+
     std::cout << "Running time complexity tests on Priority Queue " << std::endl;
     for (int i = 1; i < 11; ++i) {
         priority_queue<float, int> temp_q(i * 1000);
@@ -108,6 +148,23 @@ int main() {
                   << std::endl;
     }
     std::cout << "Finished running time complexity tests on Heap " << std::endl << std::endl;
+
+    std::cout << "Running time complexity tests on STL Stack " << std::endl;
+    for (int i = 1; i < 11; ++i) {
+        std::stack<int> temp_q;
+        int start_s = clock();
+
+        for (int j = 0; j < i * 1000; ++j) {
+            temp_q.push(j);
+        }
+        while (!temp_q.empty()) {
+            temp_q.pop();
+        }
+        int stop_s = clock();
+        std::cout << "ST Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms"
+                  << std::endl;
+    }
+    std::cout << "Finished running time complexity tests on STL Stack " << std::endl << std::endl;
 
     std::cout << "Running time complexity tests on Stack " << std::endl;
     for (int i = 1; i < 11; ++i) {
@@ -384,5 +441,35 @@ int main() {
 
     std::cout << std::endl;
 
+    interval<int>B[10];
+    interval_tree <int> *A = new interval_tree<int>();
+    A->insert_interval(0,1);
+    A->insert_interval(0,1);
+    A->insert_interval(1,2);
+    A->insert_interval(2,3);
+    A->insert_interval(1,2);
+    A->insert_interval(1,3);
+    A->insert_interval(2,3);
+    A->insert_interval(3,4);
+    A->insert_interval(0,1);
+    size_t found  = A->find_overlapping_intervals(2, 3, B, 10);
+    std::cout << " Found " << found << " intervals : " << std::endl;
+    for(size_t i = 0; i < found; ++i){
+        std::cout << B[i] << std::endl;
+    }
+
+    interval_tree_results <int> *cursor = A->find_overlapping_intervals(1, 3);
+    std::cout << " Found : " << cursor->get_num_nodes() << " results" << std::endl;
+    doubly_linked_list_node <interval<int>> *current = cursor->get_head();
+    while (current != NULL){
+        std::cout << current->val << std::endl;
+        current = current->next;
+    }
+    A->clear_results(cursor);
+
+    A->print_traversal_results(interval_tree<int>::PREORDER);
+
     return 0;
 }
+
+

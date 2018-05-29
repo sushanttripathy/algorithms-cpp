@@ -35,11 +35,11 @@ namespace KAGU {
 
         ~binary_search_tree();
 
-        virtual bst_node<X> *insert(X a);
+        virtual bst_node<X> *insert(const X &a);
 
-        virtual bst_node<X> *find(X a);
+        virtual bst_node<X> *find(const X &a);
 
-        virtual bool remove(X a);
+        virtual bool remove(const X &a);
 
         virtual void print_traversal_results(int traversal_type = binary_search_tree<X>::INORDER, bst_node<X> *node = NULL);
 
@@ -47,7 +47,7 @@ namespace KAGU {
 
         bst_node<X> *root;
 
-        virtual bst_node<X> *make_node(X val, bst_node<X> *parent = NULL);
+        virtual bst_node<X> *create_node(const X &val, bst_node<X> *parent = NULL);
 
         virtual void free_nodes(bst_node<X> *node);
 
@@ -56,11 +56,11 @@ namespace KAGU {
         virtual void set_root(bst_node<X> *node);
 
 
-        bst_node<X> *find_inorder_successor(bst_node<X> *node);
+        virtual bst_node<X> *find_inorder_successor(bst_node<X> *node);
 
-        bst_node<X> *find_subtree_min(bst_node<X> *node);
+        virtual bst_node<X> *find_subtree_min(bst_node<X> *node);
 
-        bst_node<X> *make_balanced_tree(X *sorted_arr, size_t size);
+        virtual bst_node<X> *make_balanced_tree(X *sorted_arr, size_t size);
 
         virtual void remove_node(bst_node<X> *node);
 
@@ -70,7 +70,7 @@ namespace KAGU {
     bst_node<X> *binary_search_tree<X>::make_balanced_tree(X *sorted_arr, size_t size) {
         if (size > 2) {
             size_t middle = size / 2 + 1;
-            bst_node<X> *output = this->make_node(sorted_arr[middle]);
+            bst_node<X> *output = this->create_node(sorted_arr[middle]);
 
             output->left = this->make_balanced_tree(sorted_arr, middle);
             if (output->left)
@@ -81,9 +81,9 @@ namespace KAGU {
                 output->right->parent = output;
             return output;
         } else if (size > 0) {
-            bst_node<X> *output = this->make_node(sorted_arr[0]);
+            bst_node<X> *output = this->create_node(sorted_arr[0]);
             if (size > 1) {
-                output->right = this->make_node(sorted_arr[1], output);
+                output->right = this->create_node(sorted_arr[1], output);
             }
 
             return output;
@@ -118,17 +118,17 @@ namespace KAGU {
 
 
     template<typename X>
-    bst_node<X> *binary_search_tree<X>::insert(X a) {
+    bst_node<X> *binary_search_tree<X>::insert(const X &a) {
         bst_node<X> *cur = this->get_root(), *assigned = NULL;
         if (cur == NULL) {
-            this->set_root(this->make_node(a));
+            this->set_root(this->create_node(a));
             assigned = this->get_root();
         } else {
 
             while (true) {
                 if (cur->key > a) {
                     if (cur->left == NULL) {
-                        cur->left = this->make_node(a, cur);
+                        cur->left = this->create_node(a, cur);
                         assigned = cur->left;
                         break;
                     } else {
@@ -136,7 +136,7 @@ namespace KAGU {
                     }
                 } else {
                     if (cur->right == NULL) {
-                        cur->right = this->make_node(a, cur);
+                        cur->right = this->create_node(a, cur);
                         assigned = cur->right;
                         break;
                     } else {
@@ -151,7 +151,7 @@ namespace KAGU {
 
 
     template<typename X>
-    bst_node<X> *binary_search_tree<X>::make_node(X val, bst_node<X> *parent) {
+    bst_node<X> *binary_search_tree<X>::create_node(const X &val, bst_node<X> *parent) {
         try {
             bst_node<X> *node = (bst_node<X> *) calloc(sizeof(bst_node<X>), 1);
             node->key = val;
@@ -165,7 +165,7 @@ namespace KAGU {
     }
 
     template<typename X>
-    bst_node<X> * binary_search_tree<X>::find(X a) {
+    bst_node<X> * binary_search_tree<X>::find(const X &a) {
 
         bst_node<X> *cur_node = this->get_root();
         while (cur_node != NULL) {
@@ -270,7 +270,7 @@ namespace KAGU {
     }
 
     template<typename X>
-    bool binary_search_tree<X>::remove(X a) {
+    bool binary_search_tree<X>::remove(const X &a) {
 
         bst_node<X> *cur_node = this->get_root();
 

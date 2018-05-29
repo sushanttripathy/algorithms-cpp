@@ -22,7 +22,7 @@ namespace KAGU {
 
         ~heap();
 
-        void heappush(X x);
+        void heappush(const X &x);
 
         X heappop();
 
@@ -94,7 +94,7 @@ namespace KAGU {
 #endif
 
     template<typename X>
-    void heap<X>::heappush(X x) {
+    void heap<X>::heappush(const X &x) {
         if (this->contents < this->capacity) {
             this->arr[this->contents] = x;
             ++this->contents;

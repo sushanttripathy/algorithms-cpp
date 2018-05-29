@@ -12,6 +12,7 @@ namespace KAGU {
 #define DEFAULT_CQ_SIZE 1000
 #define IGNORE_ENQUEUE_FULL_CIRCULAR_QUEUE false
 
+
     template<typename X>
     class circular_queue {
     public:
@@ -19,7 +20,7 @@ namespace KAGU {
 
         ~circular_queue();
 
-        void put(X x);
+        void put(const X &x);
 
         X get();
 
@@ -65,7 +66,7 @@ namespace KAGU {
 #endif
 
     template<typename X>
-    void circular_queue<X>::put(X x) {
+    void circular_queue<X>::put(const X &x) {
         if (this->contents < this->capacity) {
             this->arr[this->end] = x;
             this->end = (this->end + 1) % this->capacity;

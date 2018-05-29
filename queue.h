@@ -20,7 +20,7 @@ namespace KAGU {
 
         ~queue();
 
-        void put(X x);
+        void put(const X &x);
 
         X get();
 
@@ -62,7 +62,7 @@ namespace KAGU {
 #endif
 
     template<typename X>
-    void queue<X>::put(X x) {
+    void queue<X>::put(const X &x) {
         if (this->contents < this->capacity) {
             this->arr[this->contents] = x;
             ++this->contents;
