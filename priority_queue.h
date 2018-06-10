@@ -71,7 +71,7 @@ namespace KAGU {
 
     struct enqueueing_full_priority_queue : public std::exception {
         const char *what() const throw() {
-            return "Unable to enqueue a key into a full priority queue.";
+            return "Unable to put a key into a full priority queue.";
         }
     };
 
@@ -95,7 +95,7 @@ namespace KAGU {
 
     struct dequeueing_empty_priority_queue : public std::exception {
         const char *what() const throw() {
-            return "Unable to dequeue a key from an empty priority queue.";
+            return "Unable to get a key from an empty priority queue.";
         }
     };
 

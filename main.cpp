@@ -10,7 +10,8 @@
 #include "binary_search_tree.h"
 #include "red_black_bst.h"
 #include "interval_tree.h"
-
+#include "segment_tree.h"
+#include "double_ended_queue.h"
 
 #include <ctime>
 #include <random>
@@ -19,6 +20,31 @@
 
 
 using namespace KAGU;
+
+template <typename X>
+class segment_sum_tree:public segment_tree <X>{
+public:
+    segment_sum_tree(size_t size):segment_tree<X>(size) {
+
+    }
+
+    ~segment_sum_tree() {
+
+    }
+
+protected:
+    X merge_func(const X &a, const X &b) {
+        return a + b;
+    }
+
+    virtual X not_found_value(){
+        return (X) 0;
+    };
+
+    virtual X null_value(){
+        return (X) 0;
+    };
+};
 
 int main() {
 
@@ -94,6 +120,41 @@ int main() {
                   << std::endl;
     }
     std::cout << "Finished running time complexity tests on Queue " << std::endl << std::endl;
+
+    std::cout << "Running time complexity tests on Double Ended Queue " << std::endl;
+    for (int i = 1; i < 11; ++i) {
+        double_ended_queue<int> temp_q;
+        int start_s = clock();
+
+        for (int j = 0; j < i * 1000; ++j) {
+            temp_q.put(j);
+        }
+        while (!temp_q.empty()) {
+            temp_q.get();
+        }
+        int stop_s = clock();
+        std::cout << " DEQ Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+                  << " ms"
+                  << std::endl;
+    }
+
+    for (int i = 1; i < 11; ++i) {
+        double_ended_queue<int> temp_q;
+        int start_s = clock();
+
+        for (int j = 0; j < i * 1000; ++j) {
+            temp_q.put_left(j);
+        }
+        while (!temp_q.empty()) {
+            temp_q.get_left();
+        }
+        int stop_s = clock();
+        std::cout << " DEQ Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+                  << " ms"
+                  << std::endl;
+    }
+
+    std::cout << "Finished running time complexity tests on Double Ended Queue " << std::endl << std::endl;
 
 
     std::cout << "Running time complexity tests on STL Priority Queue " << std::endl;
@@ -458,7 +519,7 @@ int main() {
         std::cout << B[i] << std::endl;
     }
 
-    interval_tree_results <int> *cursor = A->find_overlapping_intervals(1, 3);
+    interval_tree_results <int> *cursor = A->find_overlapping_intervals(2, 3);
     std::cout << " Found : " << cursor->get_num_nodes() << " results" << std::endl;
     doubly_linked_list_node <interval<int>> *current = cursor->get_head();
     while (current != NULL){
@@ -469,6 +530,14 @@ int main() {
 
     A->print_traversal_results(interval_tree<int>::PREORDER);
 
+    segment_sum_tree<int> *S = new segment_sum_tree<int>(1000);
+    for(size_t i = 0; i < 1000; ++i){
+        S->update(i, i+1);
+    }
+
+    std::cout << S->get_range_func(0, 999) << std::endl;
+    std::cout << S->get_range_func(0, 499) << std::endl;
+    std::cout << S->get_range_func(500, 999) << std::endl;
     return 0;
 }
 

@@ -60,7 +60,7 @@ namespace KAGU {
 #define ENQUEUEING_FULL_QUEUE
     struct enqueueing_full_queue : public std::exception {
         const char *what() const throw() {
-            return "Trying to enqueue a key into a full queue.";
+            return "Trying to put a key into a full queue.";
         }
     };
 #endif
@@ -81,7 +81,7 @@ namespace KAGU {
 #define DEQUEUEING_EMPTY_QUEUE
     struct dequeueing_empty_queue : public std::exception {
         const char *what() const throw() {
-            return "Trying to dequeue a key from an empty queue.";
+            return "Trying to get a key from an empty queue.";
         }
     };
 #endif

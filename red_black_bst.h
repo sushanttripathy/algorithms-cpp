@@ -47,7 +47,9 @@ namespace KAGU {
 
         bst_node <X> *create_node(const X &val, bst_node <X> *parent = NULL);
 
-        void free_nodes(bst_node <X> *node);
+        //virtual void destroy_node_and_rooted_tree(bst_node <X> *node);
+
+        virtual void destroy_node(bst_node <X> *node);
 
 
         bst_node<X> * make_balanced_tree(X *sorted_arr, size_t size);
@@ -56,7 +58,6 @@ namespace KAGU {
 
         void remove_node(bst_node <X> *node);
 
-        void fix_double_black(rb_bst_node<X> *node, rb_bst_node<X> *sibling, rb_bst_node<X> *parent);
 
         void delete_repair(rb_bst_node<X> *node, rb_bst_node<X> *replacing_child);
 
@@ -93,7 +94,7 @@ namespace KAGU {
     template<typename X>
     red_black_binary_search_tree<X>::~red_black_binary_search_tree() {
         if (this->get_root() != NULL) {
-            this->free_nodes(this->get_root());
+            this->destroy_node_and_rooted_tree(this->get_root());
             this->set_root(NULL);
         }
     }
@@ -289,16 +290,16 @@ namespace KAGU {
         return assigned;
     }
 
-    template<typename X>
-    void red_black_binary_search_tree<X>::free_nodes(bst_node <X> *node) {
-        if (node->left != NULL) {
-            free_nodes(node->left);
-        }
-        if (node->right != NULL) {
-            free_nodes(node->right);
-        }
-        free((rb_bst_node<X> *) node);
-    }
+//    template<typename X>
+//    void red_black_binary_search_tree<X>::destroy_node_and_rooted_tree(bst_node <X> *node) {
+//        if (node->left != NULL) {
+//            destroy_node_and_rooted_tree(node->left);
+//        }
+//        if (node->right != NULL) {
+//            destroy_node_and_rooted_tree(node->right);
+//        }
+//
+//    }
 
 
     template<typename X>
@@ -309,7 +310,8 @@ namespace KAGU {
 
             bst_node<X> *inorder_successor = this->find_inorder_successor(node);
 
-            node->key = inorder_successor->key;
+            //node->key = inorder_successor->key;
+            this->copy_node_attributes(inorder_successor, node);
             this->remove_node(inorder_successor);
         } else if (node->left) {
             replacement_node = (rb_bst_node<X> *) node->left;
@@ -329,7 +331,7 @@ namespace KAGU {
 
             this->delete_repair((rb_bst_node<X> *) node, replacement_node);
 
-            this->free_nodes(node);
+            this->destroy_node_and_rooted_tree(node);
 
 
         } else if (node->right) {
@@ -350,7 +352,7 @@ namespace KAGU {
 
             this->delete_repair((rb_bst_node<X> *) node, replacement_node);
 
-            this->free_nodes(node);
+            this->destroy_node_and_rooted_tree(node);
 
         } else {
 
@@ -367,7 +369,7 @@ namespace KAGU {
 
             this->delete_repair((rb_bst_node<X> *) node, replacement_node);
 
-            this->free_nodes(node);
+            this->destroy_node_and_rooted_tree(node);
 
         }
     }
@@ -483,6 +485,13 @@ namespace KAGU {
                     this->rotate_right((rb_bst_node<X> *) node->parent);
                 }
             }
+        }
+    }
+
+    template<typename X>
+    void red_black_binary_search_tree<X>::destroy_node(bst_node <X> *node) {
+        if(node){
+            free((rb_bst_node<X> *) node);
         }
     }
 }

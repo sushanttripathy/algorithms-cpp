@@ -35,6 +35,8 @@ namespace KAGU {
 
         virtual doubly_linked_list_node<X> *insert(const X &val);
 
+        virtual doubly_linked_list_node<X> *insert_front(const X &val);
+
         virtual bool remove(const X &val);
 
         virtual bool remove_node(doubly_linked_list_node<X> *node);
@@ -46,7 +48,7 @@ namespace KAGU {
         doubly_linked_list_node<X> *head;
         doubly_linked_list_node<X> *tail;
 
-        virtual doubly_linked_list_node<X> *create_node(const X &val, doubly_linked_list_node<X> *parent = NULL);
+        virtual doubly_linked_list_node<X> *create_node(const X &val, doubly_linked_list_node<X> *parent = nullptr);
 
         virtual void free_list(doubly_linked_list_node<X> *node);
         virtual void delete_node(doubly_linked_list_node<X> *node);
@@ -55,15 +57,15 @@ namespace KAGU {
     template<typename X>
     doubly_linked_list<X>::doubly_linked_list() {
         this->num_nodes = 0;
-        this->head = NULL;
-        this->tail = NULL;
+        this->head = nullptr;
+        this->tail = nullptr;
     }
 
     template<typename X>
     doubly_linked_list<X>::doubly_linked_list(X *arr, size_t size) {
         this->num_nodes = 0;
-        this->head = NULL;
-        this->tail = NULL;
+        this->head = nullptr;
+        this->tail = nullptr;
 
         for(size_t i = 0; i < size; ++i){
             this->insert(arr[i]);
@@ -72,10 +74,10 @@ namespace KAGU {
 
     template<typename X>
     doubly_linked_list<X>::~doubly_linked_list() {
-        if(this->get_head() != NULL){
+        if(this->get_head() != nullptr){
             this->free_list(this->get_head());
-            this->head = NULL;
-            this->tail = NULL;
+            this->head = nullptr;
+            this->tail = nullptr;
         }
     }
 
@@ -91,10 +93,10 @@ namespace KAGU {
 
     template<typename X>
     doubly_linked_list_node<X> *doubly_linked_list<X>::insert(const X &val) {
-        doubly_linked_list_node<X> *parent = this->get_tail(), *output = NULL;
+        doubly_linked_list_node<X> *parent = this->get_tail(), *output = nullptr;
         output = this->create_node(val, parent);
         if(output){
-            if(this->get_head() == NULL){
+            if(this->get_head() == nullptr){
                 this->set_head(output);
             }
             this->set_tail(output);
@@ -107,7 +109,7 @@ namespace KAGU {
     template<typename X>
     bool doubly_linked_list<X>::remove(const X &val) {
         doubly_linked_list_node<X> *cur =  this->get_head();
-        while(cur != NULL && cur->val != val){
+        while(cur != nullptr && cur->val != val){
             cur = cur->next;
         }
         if(cur){
@@ -124,22 +126,30 @@ namespace KAGU {
                 node->prev->next = node->next;
                 node->next->prev = node->prev;
 
-                node->prev = NULL;
-                node->next = NULL;
+                node->prev = nullptr;
+                node->next = nullptr;
             }
             else if(node->prev){
                 //Tail node
-                node->prev->next = NULL;
+                node->prev->next = nullptr;
                 this->set_tail(node->prev);
 
-                node->prev = NULL;
+                node->prev = nullptr;
             }
             else{
                 //Head node
-                node->next->prev = NULL;
-                this->set_head(node->next);
-                node->next = NULL;
+                if(node->next)
+                {
+                    node->next->prev = nullptr;
+                    this->set_head(node->next);
+                    node->next = nullptr;
+                }
+                else{
+                    this->set_head(nullptr);
+                }
+
             }
+            --this->num_nodes;
             this->delete_node(node);
             return true;
         }
@@ -151,7 +161,7 @@ namespace KAGU {
         try {
             doubly_linked_list_node<X> *output = (doubly_linked_list_node<X> *)calloc(sizeof(doubly_linked_list_node<X>), 1);
             output->val = val;
-            if(parent != NULL){
+            if(parent != nullptr){
                 parent->next = output;
                 output->prev = parent;
             }
@@ -160,7 +170,7 @@ namespace KAGU {
         catch (const std::exception &e ){
             std::cerr << e.what() << std::endl;
         }
-        return NULL;
+        return nullptr;
     }
 
     template<typename X>
@@ -171,7 +181,7 @@ namespace KAGU {
     template<typename X>
     void doubly_linked_list<X>::free_list(doubly_linked_list_node<X> *node) {
         doubly_linked_list_node<X> *cur = node, *next;
-        while(cur != NULL){
+        while(cur != nullptr){
             next = cur->next;
             this->delete_node(cur);
             cur = next;
@@ -191,6 +201,28 @@ namespace KAGU {
     template<typename X>
     size_t doubly_linked_list<X>::get_num_nodes() {
         return this->num_nodes;
+    }
+
+    template<typename X>
+    doubly_linked_list_node<X> *doubly_linked_list<X>::insert_front(const X &val) {
+
+        doubly_linked_list_node<X> *parent = nullptr, *output = nullptr, *head = nullptr;
+        output = this->create_node(val, parent);
+        if(output){
+            head = this->get_head();
+            if(head ){
+                head->prev = output;
+                output->next = head;
+            }
+            this->set_head(output);
+
+            if(this->get_tail() == nullptr){
+                this->set_tail(output);
+            }
+            ++this->num_nodes;
+        }
+
+        return output;
     }
 }
 

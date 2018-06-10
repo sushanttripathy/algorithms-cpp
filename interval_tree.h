@@ -9,7 +9,7 @@
 #include "red_black_bst.h"
 #include "doubly_linked_list.h"
 
-//TODO: Implement a IntervalNodesCursor class which auto allocates and deallocates memory (it should extend a LinkedList Class)
+
 //TODO: Implement a remove function
 //TODO: Add a destroy_node function to binary search tree (replace the free function)
 
@@ -159,6 +159,8 @@ namespace KAGU {
         virtual bool rotate_left(rb_bst_node <interval<X>> *node);
 
         virtual bool rotate_right(rb_bst_node <interval<X>> *node);
+
+        virtual void destroy_node(bst_node <X> *node);
 
     private:
 
@@ -591,9 +593,14 @@ namespace KAGU {
     template<typename X>
     void interval_tree<X>::clear_results(interval_tree_results<X> *input) {
         if(input){
-            input->~interval_tree_results<X>();
+            input->~interval_tree_results();
             free(input);
         }
+    }
+
+    template<typename X>
+    void interval_tree<X>::destroy_node(bst_node<X> *node) {
+        free((interval_tree_node<X>*) node);
     }
 
 

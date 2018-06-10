@@ -49,7 +49,9 @@ namespace KAGU {
 
         virtual bst_node<X> *create_node(const X &val, bst_node<X> *parent = NULL);
 
-        virtual void free_nodes(bst_node<X> *node);
+        virtual void destroy_node_and_rooted_tree(bst_node<X> *node);
+
+        virtual void destroy_node(bst_node<X> *node);
 
         virtual bst_node<X> *get_root();
 
@@ -63,6 +65,8 @@ namespace KAGU {
         virtual bst_node<X> *make_balanced_tree(X *sorted_arr, size_t size);
 
         virtual void remove_node(bst_node<X> *node);
+
+        virtual void copy_node_attributes(bst_node<X> *source_node, bst_node<X> *destination_node);
 
     };
 
@@ -224,7 +228,8 @@ namespace KAGU {
 
             bst_node<X> *inorder_successor = this->find_inorder_successor(node);
 
-            node->key = inorder_successor->key;
+            //node->key = inorder_successor->key;
+            this->copy_node_attributes(inorder_successor, node);
             this->remove_node(inorder_successor);
         } else if (node->left) {
             if (node->parent != NULL) {
@@ -239,7 +244,7 @@ namespace KAGU {
 
             node->left->parent = node->parent;
             node->left = NULL;
-            this->free_nodes(node);
+            this->destroy_node(node);
         } else if (node->right) {
             if (node->parent != NULL) {
                 if (node->parent->right == node) {
@@ -253,7 +258,7 @@ namespace KAGU {
 
             node->right->parent = node->parent;
             node->right = NULL;
-            this->free_nodes(node);
+            this->destroy_node(node);
         } else {
             if (node->parent != NULL) {
                 if (node->parent->right == node) {
@@ -265,7 +270,7 @@ namespace KAGU {
                 this->set_root(NULL);
             }
 
-            this->free_nodes(node);
+            this->destroy_node(node);
         }
     }
 
@@ -289,14 +294,14 @@ namespace KAGU {
     }
 
     template<typename X>
-    void binary_search_tree<X>::free_nodes(bst_node<X> *node) {
+    void binary_search_tree<X>::destroy_node_and_rooted_tree(bst_node<X> *node) {
         if (node->left != NULL) {
-            free_nodes(node->left);
+            destroy_node_and_rooted_tree(node->left);
         }
         if (node->right != NULL) {
-            free_nodes(node->right);
+            destroy_node_and_rooted_tree(node->right);
         }
-        free(node);
+        this->destroy_node(node);
     }
 
 
@@ -406,10 +411,24 @@ namespace KAGU {
     binary_search_tree<X>::~binary_search_tree() {
 
         if (this->get_root() != NULL) {
-            this->free_nodes(this->get_root());
+            this->destroy_node_and_rooted_tree(this->get_root());
             this->set_root(NULL);
         }
 
+    }
+
+    template<typename X>
+    void binary_search_tree<X>::destroy_node(bst_node<X> *node) {
+        if(node){
+            free(node);
+        }
+    }
+
+    template<typename X>
+    void  binary_search_tree<X>::copy_node_attributes(bst_node<X> *source_node, bst_node<X> *destination_node) {
+        if(source_node && destination_node){
+            destination_node->key = source_node->key;
+        }
     }
 }
 
