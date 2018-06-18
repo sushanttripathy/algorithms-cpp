@@ -87,12 +87,12 @@ namespace KAGU {
         } else if (size > 0) {
             bst_node<X> *output = this->create_node(sorted_arr[0]);
             if (size > 1) {
-                output->right = this->create_node(sorted_arr[1], output);
+                output->left = this->create_node(sorted_arr[1], output);
             }
 
             return output;
         }
-        return NULL;
+        return nullptr;
     }
 
     template<typename X>

@@ -11,7 +11,7 @@
 
 
 //TODO: Implement a remove function
-//TODO: Add a destroy_node function to binary search tree (replace the free function)
+
 
 namespace KAGU {
 

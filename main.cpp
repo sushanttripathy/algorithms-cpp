@@ -12,11 +12,14 @@
 #include "interval_tree.h"
 #include "segment_tree.h"
 #include "double_ended_queue.h"
+#include "binary_indexed_tree.h"
+#include "dynamic_heap.h"
 
 #include <ctime>
 #include <random>
 #include <queue>
 #include <stack>
+#include <cassert>
 
 
 using namespace KAGU;
@@ -37,13 +40,39 @@ protected:
         return a + b;
     }
 
-    virtual X not_found_value(){
+    inline X not_found_value(){
         return (X) 0;
     };
 
-    virtual X null_value(){
+    inline X null_value(){
         return (X) 0;
     };
+};
+
+
+template <typename X>
+class binary_indexed_sum_tree:public binary_indexed_tree<X>{
+public:
+    binary_indexed_sum_tree(size_t size):binary_indexed_tree<X>(size){
+
+    }
+
+    ~binary_indexed_sum_tree(){
+
+    }
+
+protected:
+    inline X merge_func(const X& a, const X& b){
+        return a+b;
+    }
+
+    inline X initial_value(){
+        return (X)0;
+    }
+
+    inline X null_value(){
+        return (X)0;
+    }
 };
 
 int main() {
@@ -56,7 +85,7 @@ int main() {
 
     std::random_device rd;  //Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<> dis(-32767, 32767);
+    std::uniform_int_distribution<> dis(-5000, 5000);
 
 
     for (int i = 0; i < 10000; ++i) {
@@ -210,6 +239,25 @@ int main() {
     }
     std::cout << "Finished running time complexity tests on Heap " << std::endl << std::endl;
 
+
+    std::cout << "Running time complexity tests on Dynamic Heap " << std::endl;
+    for (int i = 1; i < 11; ++i) {
+        dynamic_heap<int> temp_q;
+        int start_s = clock();
+
+        for (int j = 0; j < i * 1000; ++j) {
+            temp_q.heappush(j);
+        }
+        while (!temp_q.empty()) {
+            temp_q.heappop();
+        }
+        int stop_s = clock();
+        std::cout << "DHP Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms"
+                  << std::endl;
+    }
+    std::cout << "Finished running time complexity tests on Dynamic Heap " << std::endl << std::endl;
+
+
     std::cout << "Running time complexity tests on STL Stack " << std::endl;
     for (int i = 1; i < 11; ++i) {
         std::stack<int> temp_q;
@@ -260,6 +308,22 @@ int main() {
         std::cout << a[i] << std::endl;
     }
     std::cout << std::endl;
+
+
+    int b1[20];
+    int b_n = sizeof(b1) / sizeof(int);
+    for (int k = 0; k < b_n; ++k) {
+        b1[k] = dis(gen);
+    }
+    dynamic_heap <int> dh_i(b1, b_n);
+
+    std::cout << " Heapsort results using dynamic heap: " << std::endl;
+    for (int i = 0; i < b_n; ++i) {
+
+        std::cout << dh_i.heappop() << std::endl;
+    }
+    std::cout << std::endl;
+
     std::cout << "Running time complexity tests on Heapsort " << std::endl;
     for (int i = 1; i < 11; ++i) {
         int *arr = (int *) calloc(i * 1000, sizeof(int));
@@ -530,14 +594,75 @@ int main() {
 
     A->print_traversal_results(interval_tree<int>::PREORDER);
 
-    segment_sum_tree<int> *S = new segment_sum_tree<int>(1000);
+
+
+    std::cout << "Running time complexity tests on Segment Tree " << std::endl;
+    for (int i = 1; i < 11; ++i) {
+        segment_sum_tree<int> *S = new segment_sum_tree<int>(i*1000);
+        int start_s = clock();
+
+        for (int j = 0; j < i * 1000; ++j) {
+            S->update(j, j+1);
+        }
+
+        for (int j = 0; j < i * 1000; ++j) {
+            for(int k = j+1; k < i*1000;++k){
+                S->get_range_func(j, j+1);
+            }
+        }
+
+        int stop_s = clock();
+        std::cout << "SegT Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms"
+                  << std::endl;
+    }
+    std::cout << "Finished running time complexity tests on Segment Tree " << std::endl << std::endl;
+
+    std::cout << "Running time complexity tests on Binary Indexed (Fenwick) Tree " << std::endl;
+    for (int i = 1; i < 11; ++i) {
+        binary_indexed_sum_tree<int> *S = new binary_indexed_sum_tree<int>(i*1000);
+        int start_s = clock();
+
+        for (int j = 0; j < i * 1000; ++j) {
+            S->update(j, j+1);
+        }
+
+        for (int j = 0; j < i * 1000; ++j) {
+            for(int k = j+1; k < i*1000;++k){
+                S->get_merge_func_until(k) - S->get_merge_func_until(j);
+            }
+        }
+
+        int stop_s = clock();
+        std::cout << "BiT Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000 << " ms"
+                  << std::endl;
+    }
+    std::cout << "Finished running time complexity tests on Binary Indexed Tree " << std::endl << std::endl;
+
+
+    binary_indexed_sum_tree<int> *S = new binary_indexed_sum_tree<int>(1000);
     for(size_t i = 0; i < 1000; ++i){
         S->update(i, i+1);
     }
 
-    std::cout << S->get_range_func(0, 999) << std::endl;
-    std::cout << S->get_range_func(0, 499) << std::endl;
-    std::cout << S->get_range_func(500, 999) << std::endl;
+    std::cout << S->get_merge_func_until(499) << std::endl;
+
+    std::cout << " Checking Segment Tree and Binary Indexed Tree coherence." << std::endl;
+
+    binary_indexed_sum_tree<int> *S1 = new binary_indexed_sum_tree<int>(1000);
+    segment_sum_tree<int> *S2 = new segment_sum_tree<int>(1000);
+    for (size_t i = 0; i < 1000; ++i){
+        S1->update(i, i+1);
+        S2->update(i, i+1);
+    }
+
+    for (size_t i = 0; i < 1000; ++i){
+        for (size_t j = i+1; j < 1000; ++j){
+            assert((S1->get_merge_func_until(j) - S1->get_merge_func_until(i-1)) == S2->get_range_func(i, j));
+        }
+    }
+
+    std::cout << " All checks passed" << std::endl;
+
     return 0;
 }
 

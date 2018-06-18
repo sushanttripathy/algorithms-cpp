@@ -130,22 +130,22 @@ namespace KAGU {
     }
 
     template<typename X>
-    segment_tree_node <X> * segment_tree<X>::make_tree(X *arr, size_t lo, size_t hi, segment_tree_node<X> *parent) {
+    segment_tree_node<X> *segment_tree<X>::make_tree(X *arr, size_t lo, size_t hi, segment_tree_node<X> *parent) {
         try {
-            segment_tree_node <X> *node = (segment_tree_node <X> *)calloc(1, sizeof(segment_tree_node<X>));
+            segment_tree_node<X> *node = (segment_tree_node<X> *) calloc(1, sizeof(segment_tree_node<X>));
             node->lo = lo;
             node->hi = hi;
             node->parent = parent;
-            if(lo == hi){
+            if (lo == hi) {
                 node->value = arr[lo];
                 this->leaf_nodes[lo] = node;
-            } else{
-                size_t mid = (lo + hi)/2;
+            } else {
+                size_t mid = (lo + hi) / 2;
                 node->left = this->make_tree(arr, lo, mid, node);
-                node->right = this->make_tree(arr, mid+1, hi, node);
+                node->right = this->make_tree(arr, mid + 1, hi, node);
             }
             return node;
-        }catch (std::exception &e){
+        } catch (std::exception &e) {
             //throw alloc error here
         }
 
