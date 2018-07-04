@@ -21,6 +21,8 @@
 #include <stack>
 #include <cassert>
 
+#include "auto_suggest.h"
+
 
 using namespace KAGU;
 
@@ -108,7 +110,7 @@ int main() {
             temp_q.pop();
         }
         int stop_s = clock();
-        std::cout << " CQ Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
+        std::cout << " Q Size: " << i * 1000 << " time: " << (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000
                   << " ms"
                   << std::endl;
     }
@@ -167,6 +169,7 @@ int main() {
                   << std::endl;
     }
 
+    std::cout << "Running time complexity tests on Double Ended Queue (put left, get left) " << std::endl;
     for (int i = 1; i < 11; ++i) {
         double_ended_queue<int> temp_q;
         int start_s = clock();

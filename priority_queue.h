@@ -20,15 +20,19 @@ namespace KAGU {
 
         ~priority_queue();
 
-        void put(const X &x, const Y &priority);
+        virtual void put(const X &x, const Y &priority);
 
-        X get(Y &priority);
+        virtual X get(Y &priority);
 
-        X get();
+        virtual X get();
 
-        bool empty();
+        virtual X peek();
 
-        bool full();
+        virtual X peek(Y &priority);
+
+        virtual bool empty();
+
+        virtual bool full();
 
     private:
         X *arr;
@@ -84,8 +88,7 @@ namespace KAGU {
             this->arr2[this->contents] = priority;
             this->contents++;
             this->percolate_up(this->contents - 1);
-        }
-        else if(!IGNORE_ENQUEUEING_INTO_FULL_PRIORITY_QUEUE){
+        } else if (!IGNORE_ENQUEUEING_INTO_FULL_PRIORITY_QUEUE) {
             throw enqueueing_full_priority_queue();
         }
     }
@@ -107,8 +110,8 @@ namespace KAGU {
             X temp = this->arr[0];
             Y temp2 = this->arr2[0];
 
-            this->arr[0] = this->arr[this->contents -1];
-            this->arr2[0] = this->arr2[this->contents -1];
+            this->arr[0] = this->arr[this->contents - 1];
+            this->arr2[0] = this->arr2[this->contents - 1];
 
             this->contents--;
             this->percolate_down(0);
@@ -136,6 +139,42 @@ namespace KAGU {
             throw dequeueing_empty_priority_queue();
         }
     }
+
+#ifndef PEEKING_EMPTY_PRIORITY_QUEUE
+#define PEEKING_EMPTY_PRIORITY_QUEUE
+
+    struct peeking_empty_priority_queue : public std::exception {
+        const char *what() const throw() {
+            return "Unable to peek an empty priority queue.";
+        }
+    };
+
+#endif
+
+
+    template<typename X, typename Y>
+    X priority_queue<X, Y>::peek() {
+        if (this->contents > 0) {
+            X temp = this->arr[0];
+            return temp;
+        } else {
+            throw peeking_empty_priority_queue();
+        }
+    }
+
+    template<typename X, typename Y>
+    X priority_queue<X, Y>::peek(Y &priority) {
+        if (this->contents > 0) {
+            X temp = this->arr[0];
+            Y temp2 = this->arr2[0];
+
+            priority = temp2;
+            return temp;
+        } else {
+            throw peeking_empty_priority_queue();
+        }
+    }
+
 
     template<typename X, typename Y>
     void priority_queue<X, Y>::percolate_up(int i) {
@@ -196,7 +235,7 @@ namespace KAGU {
     }
 
     template<typename X, typename Y>
-    void priority_queue<X, Y>::percolate_down(int i){
+    void priority_queue<X, Y>::percolate_down(int i) {
         if (i == this->contents - 1) {
             return;
         }
@@ -204,7 +243,7 @@ namespace KAGU {
         int right;
         bool done;
 
-        if(this->is_max_priority_queue){
+        if (this->is_max_priority_queue) {
             int largest = i;
             done = false;
             while (!done) {
@@ -232,8 +271,7 @@ namespace KAGU {
                 }
                 i = largest;
             }
-        }
-        else{
+        } else {
             int smallest = i;
             done = false;
             while (!done) {
@@ -274,13 +312,15 @@ namespace KAGU {
     }
 
     template<typename X, typename Y>
-    bool priority_queue<X, Y>::full(){
+    bool priority_queue<X, Y>::full() {
         if (this->contents < this->capacity) {
             return false;
         } else {
             return true;
         }
     }
+
+
 }
 
 #endif //ALGORITHMS_PRIORITY_QUEUE_H
