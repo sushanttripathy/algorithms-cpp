@@ -26,6 +26,8 @@ namespace KAGU {
 
         X heappop();
 
+        X peek();
+
         bool empty();
 
         bool full();
@@ -130,6 +132,8 @@ namespace KAGU {
 
 
     }
+
+
 
     template<typename X>
     void heap<X>::percolate_up(int i) {
@@ -250,6 +254,26 @@ namespace KAGU {
             return false;
         } else {
             return true;
+        }
+    }
+
+#ifndef PEEKING_EMPTY_HEAP
+#define PEEKING_EMPTY_HEAP
+
+    struct peeking_empty_heap : public std::exception {
+        const char *what() const throw() {
+            return "Unable to peek into an empty heap.";
+        }
+    };
+
+#endif
+
+    template<typename X>
+    X heap<X>::peek() {
+        if (this->contents > 0) {
+            return this->arr[0];
+        } else {
+            throw peeking_empty_heap();
         }
     }
 }

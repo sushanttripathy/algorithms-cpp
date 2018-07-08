@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <exception>
+#include "circular_queue.h"
 
 namespace KAGU {
 
@@ -24,9 +25,13 @@ namespace KAGU {
 
         X get();
 
+        X peek();
+
         bool empty();
 
         bool full();
+
+        X operator[](int index);
 
     private:
         X *arr;
@@ -113,6 +118,53 @@ namespace KAGU {
             return false;
         } else {
             return true;
+        }
+    }
+
+#ifndef PEEKING_EMPTY_QUEUE
+#define PEEKING_EMPTY_QUEUE
+
+    struct peeking_empty_queue : public std::exception {
+        const char *what() const throw() {
+            return "Unable to peek into an empty queue.";
+        }
+    };
+
+#endif
+
+    template<typename X>
+    X queue<X>::peek() {
+        if (this->contents > 0) {
+            return this->arr[0];
+        } else {
+            throw peeking_empty_queue();
+        }
+    }
+
+#ifndef ACCESSING_OUT_OF_BOUNDS_QUEUE_INDEX
+#define ACCESSING_OUT_OF_BOUNDS_QUEUE_INDEX
+
+    struct accessing_out_of_bounds_queue_index : public std::exception {
+        const char *what() const throw() {
+            return "Error trying to access out of bounds queue index.";
+        }
+    };
+
+#endif
+
+    template<typename X>
+    X queue<X>::operator[](int index) {
+
+        if (this->contents) {
+            if (index >= 0 && index < this->contents) {
+                return this->arr[index];
+            } else if (index < 0 && this->contents + index >= 0) {
+                return this->arr[this->contents + index];
+            } else {
+                throw accessing_out_of_bounds_queue_index();
+            }
+        } else {
+            throw peeking_empty_queue();
         }
     }
 

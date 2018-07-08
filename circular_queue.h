@@ -24,9 +24,13 @@ namespace KAGU {
 
         X get();
 
+        X peek();
+
         bool empty();
 
         bool full();
+
+        X operator[](int index);
 
     private:
         X *arr;
@@ -58,11 +62,13 @@ namespace KAGU {
 
 #ifndef ENQUEUEING_FULL_QUEUE
 #define ENQUEUEING_FULL_QUEUE
+
     struct enqueueing_full_queue : public std::exception {
         const char *what() const throw() {
             return "Trying to put a key into a full queue.";
         }
     };
+
 #endif
 
     template<typename X>
@@ -71,19 +77,20 @@ namespace KAGU {
             this->arr[this->end] = x;
             this->end = (this->end + 1) % this->capacity;
             ++this->contents;
-        }
-        else if(!IGNORE_ENQUEUE_FULL_CIRCULAR_QUEUE){
+        } else if (!IGNORE_ENQUEUE_FULL_CIRCULAR_QUEUE) {
             throw enqueueing_full_queue();
         }
     }
 
 #ifndef DEQUEUEING_EMPTY_QUEUE
 #define DEQUEUEING_EMPTY_QUEUE
+
     struct dequeueing_empty_queue : public std::exception {
         const char *what() const throw() {
             return "Trying to get a key from an empty queue.";
         }
     };
+
 #endif
 
     template<typename X>
@@ -95,7 +102,6 @@ namespace KAGU {
             return temp;
         } else {
             throw dequeueing_empty_queue();
-//            return this->arr[this->start];
         }
     }
 
@@ -115,6 +121,52 @@ namespace KAGU {
             return false;
         } else {
             return true;
+        }
+    }
+
+#ifndef PEEKING_EMPTY_QUEUE
+#define PEEKING_EMPTY_QUEUE
+
+    struct peeking_empty_queue : public std::exception {
+        const char *what() const throw() {
+            return "Unable to peek into an empty queue.";
+        }
+    };
+
+#endif
+
+    template<typename X>
+    X circular_queue<X>::peek() {
+        if (this->contents > 0) {
+            return this->arr[this->start];
+        } else {
+            throw peeking_empty_queue();
+        }
+    }
+
+#ifndef ACCESSING_OUT_OF_BOUNDS_QUEUE_INDEX
+#define ACCESSING_OUT_OF_BOUNDS_QUEUE_INDEX
+
+    struct accessing_out_of_bounds_queue_index : public std::exception {
+        const char *what() const throw() {
+            return "Error trying to access out of bounds queue index.";
+        }
+    };
+
+#endif
+
+    template<typename X>
+    X circular_queue<X>::operator[](int index) {
+        if (this->contents > 0) {
+            if (index >= 0 && index < this->contents) {
+                return this->arr[(this->start + index)%this->capacity];
+            } else if (index < 0 && this->contents + index >= 0) {
+                return this->arr[(this->start + this->contents + index)%this->capacity];
+            } else {
+                throw accessing_out_of_bounds_queue_index();
+            }
+        } else {
+            throw peeking_empty_queue();
         }
     }
 }

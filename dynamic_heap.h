@@ -40,7 +40,9 @@ namespace KAGU {
 
         virtual size_t size();
 
-        virtual int get_level(int sindex);
+        virtual int get_level(int sindex); // Given a node index returns the level of the node within this binary heap
+
+        virtual X peek();
 
     private:
         virtual void heapify(X *arr, size_t size);
@@ -368,6 +370,26 @@ namespace KAGU {
         }
 
         return nullptr;
+    }
+
+#ifndef PEEKING_EMPTY_DYNAMIC_HEAP
+#define PEEKING_EMPTY_DYNAMIC_HEAP
+
+    struct peeking_empty_dynamic_heap : public std::exception {
+        const char *what() const throw() {
+            return "Unable to peek into an empty (dynamic) heap.";
+        }
+    };
+
+#endif
+
+    template<typename X>
+    X dynamic_heap<X>::peek() {
+        if (this->contents) {
+            return this->root->key;
+        } else {
+            throw peeking_empty_dynamic_heap();
+        }
     }
 }
 

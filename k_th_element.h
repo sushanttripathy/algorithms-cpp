@@ -10,9 +10,8 @@
 #include "array_actors.h"
 
 namespace KAGU {
-
     template<typename X>
-    X get_kth_element(array_actor_2d<X> *input, int k, bool(*is_valid)(triplet_type1<X, int, int> &) = nullptr,
+    X get_kth_element(array_actor_2d<X> *input, int k, bool(*is_valid)(triplet_type1<X, int, int> &, array_actor_2d<X> *) = nullptr,
                       bool order_ascending = true) {
         X ret;
         if (input) {
@@ -36,7 +35,7 @@ namespace KAGU {
                     triplet_type1<X, int, int> p = h->heappop();
 
                     if (is_valid) {
-                        if ((*is_valid)(p)) {
+                        if ((*is_valid)(p, input)) {
                             ++counts;
                             if (p.z < input->columns() - 1) {
                                 h->heappush(triplet_type1<X, int, int>((*input)[p.y][p.z + 1], p.y, p.z + 1));
@@ -68,24 +67,28 @@ namespace KAGU {
 
                 while (counts < k && !h->empty()) {
                     triplet_type1<X, int, int> p = h->heappop();
+
+
+
                     if (is_valid) {
-                        if ((*is_valid)(p)) {
+                        if ((*is_valid)(p, input)) {
+
                             ++counts;
                             if (p.y < input->rows() - 1) {
-                                h->heappush(triplet_type1<X, int, int>((*input)[p.y + 1][p.z], p.y + 1, p.z));
+                                h->heappush(triplet_type1<X, int, int>((*input)[p.y+1][p.z], p.y + 1, p.z ));
                             }
                             if (counts == k) {
                                 ret = p.x;
                             }
                         } else {
                             if (p.y < input->rows() - 1) {
-                                h->heappush(triplet_type1<X, int, int>((*input)[p.y + 1][p.z], p.y + 1, p.z));
+                                h->heappush(triplet_type1<X, int, int>((*input)[p.y+1][p.z], p.y + 1, p.z ));
                             }
                         }
                     } else {
                         ++counts;
                         if (p.y < input->rows() - 1) {
-                            h->heappush(triplet_type1<X, int, int>((*input)[p.y + 1][p.z], p.y + 1, p.z));
+                            h->heappush(triplet_type1<X, int, int>((*input)[p.y+1][p.z], p.y + 1, p.z ));
                         }
                         if (counts == k) {
                             ret = p.x;
@@ -102,5 +105,6 @@ namespace KAGU {
         return ret;
     }
 }
+
 
 #endif //ALGORITHMS_K_TH_SMALLEST_NUMBER_H
