@@ -11,3 +11,4 @@ Implementations of note are :
 2. Interval Tree derived from Red-Black Binary Search Tree
 3. Fenwick Tree (Binary Indexed Tree)
 4. Segment Tree (Interface)
+5. Trie
