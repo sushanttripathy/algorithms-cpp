@@ -20,8 +20,9 @@
 #include <queue>
 #include <stack>
 #include <cassert>
+#include "trie.h"
 
-#include "auto_suggest.h"
+
 
 
 using namespace KAGU;
@@ -78,6 +79,23 @@ protected:
 };
 
 int main() {
+    try{
+        trie<char,int>t;
+        int d0 = 2;
+        t.insert_sequence((char*)"hello", 5, d0);
+        int d;
+        std::cout << d  << " " << t.find_sequence((char*)"hello", 5 , d) << std::endl;
+        t.delete_sequence((char*)"hello", 5);
+        d0 = 3;
+        t.insert_sequence((char*)"hello", 5, d0);
+        t.insert_sequence((char*)"hello world", sizeof("hello world"), d0);
+        d = 0;
+        std::cout << d  << " " << t.find_sequence((char*)"hello", 5 , d) << std::endl;
+    }catch (std::exception &e){
+        std::cout << e.what() << std::endl;
+        exit(-1);
+    }
+
 
     circular_queue<int> Q(10000);
     queue<long> Q2(10000);
@@ -665,6 +683,10 @@ int main() {
     }
 
     std::cout << " All checks passed" << std::endl;
+
+
+
+
 
     return 0;
 }
