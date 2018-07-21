@@ -2,8 +2,8 @@
 // Created by sushant on 7/10/18.
 //
 
-#ifndef ALGORITHMS_RADIX_TREE_H
-#define ALGORITHMS_RADIX_TREE_H
+#ifndef ALGORITHMS_TRIE_H
+#define ALGORITHMS_TRIE_H
 
 #include <stdlib.h>
 #include <set>
@@ -359,4 +359,4 @@ namespace KAGU {
     }
 }
 
-#endif //ALGORITHMS_RADIX_TREE_H
+#endif //ALGORITHMS_TRIE_H
