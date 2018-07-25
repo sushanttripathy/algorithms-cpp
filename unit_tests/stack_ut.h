@@ -12,7 +12,7 @@
 #include "../unit_test_framework.h"
 namespace KAGU{
     template <typename X>
-    class stack_push_pop_test:public method_test_with_complexity_analysis{
+    class stack_push_pop_test:public method_test_with_complexity_analysis<X>{
     public:
         stack_push_pop_test();
         ~stack_push_pop_test();
@@ -21,16 +21,14 @@ namespace KAGU{
 
         void cleanup();
 
-        bool run_one_test(int data_size, int &prec);
+        bool run_one_test(int data_size, int run_num, int &prec);
 
-    protected:
-        std::map<int , std::vector<std::vector<X>>> *data;
-        int internal_index;
+
     };
 
     template<typename X>
-    stack_push_pop_test<X>::stack_push_pop_test():method_test_with_complexity_analysis(1000, 100000, 1000, 3) {
-        this->internal_index = 0;
+    stack_push_pop_test<X>::stack_push_pop_test():method_test_with_complexity_analysis<X>(1000, 100000, 1000, 3) {
+
 
     }
 
@@ -41,44 +39,37 @@ namespace KAGU{
 
     template<typename X>
     void stack_push_pop_test<X>::initialize() {
-        this->data = new std::map<int , std::vector<std::vector<X>>>();
 
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
         std::uniform_real_distribution<> dr(-50000.0, 50000.0);
 
         for(int size = this->n_start; size <= this->n_end; size += this->n_step ){
-            std::vector<std::vector<X>> l;
+
             for(int r = 0; r < this->reruns; ++r){
                 std::vector <X> l0;
                 for(int i = 0; i < size; ++i){
                     l0.push_back((X)dr(gen));
                 }
-                l.push_back(l0);
+
+                this->store(size, r, l0);
             }
-            this->data->insert(std::pair<int, std::vector<std::vector<X>>>(size, l));
+
         }
     }
 
     template<typename X>
     void stack_push_pop_test<X>::cleanup() {
-        if (this->data){
-            delete this->data;
-            this->data = nullptr;
-        }
+
     }
 
 
 
     template<typename X>
-    bool stack_push_pop_test<X>::run_one_test(int data_size, int &prec) {
+    bool stack_push_pop_test<X>::run_one_test(int data_size, int run_num,  int &prec) {
         typename std::vector <X>::iterator it;
-        typename std::map<int, std::vector<std::vector<X>>>::iterator it1;
-        it1 = this->data->find(data_size);
-        std::vector<std::vector <X>> *p0 = &(it1->second);
-        std::vector<X>*p = &((*p0)[this->internal_index%this->reruns]);
-        ++this->internal_index;
 
+        std::vector<X>*p = this->get_stored_inputs(data_size, run_num);
         KAGU::stack<X> stack1(data_size), stack2(data_size);
         assert(stack1.empty());
 

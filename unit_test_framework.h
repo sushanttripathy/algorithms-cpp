@@ -34,6 +34,7 @@ namespace KAGU {
 
 #define MAX_UNIT_TEST_RUNS_TO_SHOW 5
 
+    template<typename X>
     class method_test_with_complexity_analysis {
     public:
         method_test_with_complexity_analysis(int n_start = 1000, int n_end = 100000, int n_step = 2000, int reruns = 3);
@@ -42,9 +43,9 @@ namespace KAGU {
 
         virtual void initialize() = 0;
 
-        virtual void cleanup() = 0;
+        virtual void cleanup();
 
-        virtual bool run_one_test(int data_size, int &precision_time) = 0;
+        virtual bool run_one_test(int data_size, int run_num, int &precision_time) = 0;
 
         virtual bool run_tests(int n_start = 1000, int n_end = 10000, int n_step = 1000, int individual_set_reruns = 1,
                                int show_every_n_runs = 5,
@@ -55,30 +56,45 @@ namespace KAGU {
     protected:
         int n_start, n_end, n_step, reruns;
 
+        virtual void store(int n_size, int run_num, std::vector<X> &in);
+
+        virtual std::vector<X> *get_stored_inputs(int n_size, int run_num);
+
+        std::map<int, std::map<int, std::vector<X>>> *data;
+
     };
 
-    method_test_with_complexity_analysis::method_test_with_complexity_analysis(int n_start, int n_end, int n_step,
-                                                                               int reruns) {
+    template<typename X>
+    method_test_with_complexity_analysis<X>::method_test_with_complexity_analysis(int n_start, int n_end, int n_step,
+                                                                                  int reruns) {
         this->n_start = n_start;
         this->n_end = n_end;
         this->n_step = n_step;
         this->reruns = reruns;
+        this->data = nullptr;
     }
 
-    method_test_with_complexity_analysis::~method_test_with_complexity_analysis() {
-
+    template<typename X>
+    method_test_with_complexity_analysis<X>::~method_test_with_complexity_analysis() {
+        if (this->data) {
+            delete this->data;
+            this->data = nullptr;
+        }
     }
 
-    bool method_test_with_complexity_analysis::run() {
+    template<typename X>
+    bool method_test_with_complexity_analysis<X>::run() {
         this->initialize();
         this->run_tests(this->n_start, this->n_end, this->n_step, this->reruns);
         this->cleanup();
     }
 
-    bool method_test_with_complexity_analysis::run_tests(int n_start, int n_end, int n_step, int individual_set_reruns,
-                                                         int show_every_n_runs,
-                                                         const std::string &init_message,
-                                                         const std::string &end_message) {
+    template<typename X>
+    bool
+    method_test_with_complexity_analysis<X>::run_tests(int n_start, int n_end, int n_step, int individual_set_reruns,
+                                                       int show_every_n_runs,
+                                                       const std::string &init_message,
+                                                       const std::string &end_message) {
         int size = int(float(n_end - n_start) / float(n_step) + 1);
 
         if (size < 1) {
@@ -103,7 +119,7 @@ namespace KAGU {
         }
 
 
-        float total_runs = (float)size*(float)reruns;
+        float total_runs = (float) size * (float) reruns;
         float completed_runs = 0.0;
         float progress = 0.0;
         int bar_width = 70;
@@ -117,7 +133,7 @@ namespace KAGU {
             while (cur_run_count < individual_set_reruns) {
 
                 clock_start = clock();
-                this->run_one_test(n, precision_time);
+                this->run_one_test(n, cur_run_count, precision_time);
                 clock_stop = clock();
 
                 if (precision_time == -1)
@@ -127,7 +143,7 @@ namespace KAGU {
                 ++cur_run_count;
 
                 ++completed_runs;
-                progress = completed_runs/total_runs;
+                progress = completed_runs / total_runs;
                 std::cout << "[";
                 int pos = bar_width * progress;
                 for (int g = 0; g < bar_width; ++g) {
@@ -296,6 +312,56 @@ namespace KAGU {
         return true;
     }
 
+    template<typename X>
+    void method_test_with_complexity_analysis<X>::store(int n_size, int run_num, std::vector<X> &in) {
+        if (!this->data) {
+            this->data = new std::map<int, std::map<int, std::vector<X>>>();
+        }
+
+        typename std::map<int, std::map<int, std::vector<X>>>::iterator it0;
+        typename std::map<int, std::vector<X>>::iterator it1;
+
+        it0 = this->data->find(n_size);
+        if (it0 == this->data->end()) {
+            //insert everything
+            std::map<int, std::vector<X>> ins;
+            ins.insert(std::pair<int, std::vector<X>>(run_num, in));
+
+            this->data->insert(std::pair<int, std::map<int, std::vector<X>>>(n_size, ins));
+        } else {
+            //n_size entry exists
+            it1 = it0->second.find(run_num);
+            if (it1 == it0->second.end()) {
+                //insert run_num, vector pair
+                it0->second.insert(std::pair<int, std::vector<X>>(run_num, in));
+            } else {
+                //replace the previous entry
+                it1->second = in;
+            }
+        }
+    }
+
+    template<typename X>
+    std::vector<X> *method_test_with_complexity_analysis<X>::get_stored_inputs(int n_size, int run_num) {
+        if (!this->data)
+            return nullptr;
+        typename std::map<int, std::map<int, std::vector<X>>>::iterator it0;
+        typename std::map<int, std::vector<X>>::iterator it1;
+
+        it0 = this->data->find(n_size);
+        if (it0 != this->data->end()) {
+            it1 = it0->second.find(run_num);
+            if (it1 != it0->second.end()) {
+                return &(it1->second);
+            }
+        }
+        return nullptr;
+    }
+
+    template<typename X>
+    void method_test_with_complexity_analysis<X>::cleanup() {
+
+    }
 
 }
 

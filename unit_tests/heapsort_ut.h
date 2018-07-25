@@ -15,7 +15,7 @@
 
 namespace KAGU {
     template<typename X>
-    class heapsort_test : public method_test_with_complexity_analysis {
+    class heapsort_test : public method_test_with_complexity_analysis<X> {
     public:
         heapsort_test();
 
@@ -25,17 +25,12 @@ namespace KAGU {
 
         void cleanup();
 
-        bool run_one_test(int data_size, int &prec);
+        bool run_one_test(int data_size, int run_num, int &prec);
 
-    protected:
-        std::map<int, std::vector<std::vector<X>>> *unsorted;
-        std::map<int, std::vector<std::vector<X>>> *sorted;
-        int internal_index;
     };
 
     template<typename X>
     heapsort_test<X>::heapsort_test() {
-        this->internal_index = 0;
     }
 
     template<typename X>
@@ -45,68 +40,47 @@ namespace KAGU {
 
     template<typename X>
     void heapsort_test<X>::initialize() {
-        this->sorted = new std::map<int , std::vector<std::vector<X>>>();
-        this->unsorted = new std::map<int , std::vector<std::vector<X>>>();
-
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
         std::uniform_real_distribution<> dr(-50000.0, 50000.0);
 
-        for(int size = this->n_start; size <= this->n_end; size += this->n_step ){
-            std::vector<std::vector<X>> m0;
-            std::vector<std::vector<X>> m1;
-            for(int r = 0; r < this->reruns; ++r){
-                std::vector <X> l0;
-                std::vector <X> l1;
-                for(int i = 0; i < size; ++i){
+        for (int size = this->n_start; size <= this->n_end; size += this->n_step) {
 
-                    X num = (X)dr(gen);
+            for (int r = 0; r < this->reruns; ++r) {
+                std::vector<X> l0;
+                std::vector<X> l1;
+                for (int i = 0; i < size; ++i) {
+
+                    X num = (X) dr(gen);
                     l0.push_back(num);
                     l1.push_back(num);
                 }
-                m0.push_back(l0);
                 std::sort(l1.begin(), l1.end());
-                m1.push_back(l1);
+
+                this->store(size, r * 2, l0);
+                this->store(size, r * 2 + 1, l1);
             }
-            this->unsorted->insert(std::pair<int, std::vector<std::vector<X>>>(size, m0));
-            this->sorted->insert(std::pair<int, std::vector<std::vector<X>>>(size, m1));
+
         }
     }
 
     template<typename X>
     void heapsort_test<X>::cleanup() {
-        if(this->sorted){
-            delete this->sorted;
-            delete this->unsorted;
-
-            this->sorted = nullptr;
-            this->unsorted = nullptr;
-        }
 
     }
 
     template<typename X>
-    bool heapsort_test<X>::run_one_test(int data_size, int &prec) {
-        typename std::vector <X>::iterator it;
-        typename std::map<int, std::vector<std::vector<X>>>::iterator it0;
-        typename std::map<int, std::vector<std::vector<X>>>::iterator it1;
+    bool heapsort_test<X>::run_one_test(int data_size, int run_num, int &prec) {
+        typename std::vector<X>::iterator it;
 
-        it0 = this->unsorted->find(data_size);
-        it1 = this->sorted->find(data_size);
+        std::vector<X> *unsorted = this->get_stored_inputs(data_size, run_num * 2), *sorted = this->get_stored_inputs(
+                data_size, run_num * 2 + 1);
 
-        if(it0 != this->unsorted->end() && it1 != this->sorted->end()){
+        if (sorted && unsorted) {
 
-            std::vector<std::vector <X>> *p0 = &(it0->second);
-            std::vector<std::vector <X>> *p1 = &(it1->second);
-
-            std::vector<X>*q0 = &((*p0)[this->internal_index%this->reruns]);
-            std::vector<X>*q1 = &((*p1)[this->internal_index%this->reruns]);
-
-            ++this->internal_index;
-
-            X *temp_arr = (X*)calloc(data_size, sizeof(X));
-            for(int i = 0; i < data_size; ++i){
-                temp_arr[i] = (*q0)[i];
+            X *temp_arr = (X *) calloc(data_size, sizeof(X));
+            for (int i = 0; i < data_size; ++i) {
+                temp_arr[i] = (*unsorted)[i];
             }
             int start = clock();
             heapsort(temp_arr, data_size);
@@ -114,11 +88,11 @@ namespace KAGU {
 
             prec = stop - start;
 
-            for(int i = 0; i < data_size; ++i){
-                assert(temp_arr[i] == (*q1)[i]);
+            for (int i = 0; i < data_size; ++i) {
+                assert(temp_arr[i] == (*sorted)[i]);
             }
 
-        }else{
+        } else {
             throw unit_test_data_not_found();
         }
 

@@ -1,25 +1,24 @@
 //
-// Created by sushant on 7/21/18.
+// Created by sushant on 7/23/18.
 //
 
-#ifndef ALGORITHMS_QUICKSORT_UT_H
-#define ALGORITHMS_QUICKSORT_UT_H
+#ifndef ALGORITHMS_K_TH_ELEMENT_UT_H
+#define ALGORITHMS_K_TH_ELEMENT_UT_H
 
 #include <map>
-#include <vector>
-#include <algorithm>
 #include <random>
 #include <cassert>
+#include "../k_th_element.h"
 #include "../unit_test_framework.h"
-#include "../quicksort.h"
+#include <algorithm>
 
 namespace KAGU {
     template<typename X>
-    class quicksort_test : public method_test_with_complexity_analysis<X> {
+    class k_th_element_test : public method_test_with_complexity_analysis<X> {
     public:
-        quicksort_test();
+        k_th_element_test();
 
-        ~quicksort_test();
+        ~k_th_element_test();
 
         void initialize();
 
@@ -30,47 +29,47 @@ namespace KAGU {
     };
 
     template<typename X>
-    quicksort_test<X>::quicksort_test() {
-    }
-
-    template<typename X>
-    quicksort_test<X>::~quicksort_test() {
+    k_th_element_test<X>::k_th_element_test() {
 
     }
 
     template<typename X>
-    void quicksort_test<X>::initialize() {
+    k_th_element_test<X>::~k_th_element_test() {
+
+    }
+
+    template<typename X>
+    void k_th_element_test<X>::initialize() {
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
         std::uniform_real_distribution<> dr(-50000.0, 50000.0);
 
-        for (int size = this->n_start; size <= this->n_end; size += this->n_step) {
+        for(int size = this->n_start; size <= this->n_end; size += this->n_step ){
 
-            for (int r = 0; r < this->reruns; ++r) {
-                std::vector<X> l0;
-                std::vector<X> l1;
-                for (int i = 0; i < size; ++i) {
-
-                    X num = (X) dr(gen);
-                    l0.push_back(num);
-                    l1.push_back(num);
+            for(int r = 0; r < this->reruns; ++r){
+                std::vector <X> l0;
+                std::vector <X> l1;
+                for(int i = 0; i < size; ++i){
+                    X temp = (X)dr(gen);
+                    l0.push_back(temp);
+                    l1.push_back(temp);
                 }
                 std::sort(l1.begin(), l1.end());
 
-                this->store(size, r * 2, l0);
-                this->store(size, r * 2 + 1, l1);
+                this->store(size, 2*r, l0);
+                this->store(size, 2*r+1, l1);
             }
 
         }
     }
 
     template<typename X>
-    void quicksort_test<X>::cleanup() {
+    void k_th_element_test<X>::cleanup() {
 
     }
 
     template<typename X>
-    bool quicksort_test<X>::run_one_test(int data_size, int run_num, int &prec) {
+    bool k_th_element_test<X>::run_one_test(int data_size, int run_num, int &prec) {
         typename std::vector<X>::iterator it;
 
         std::vector<X> *unsorted = this->get_stored_inputs(data_size, run_num * 2), *sorted = this->get_stored_inputs(
@@ -83,7 +82,7 @@ namespace KAGU {
                 temp_arr[i] = (*unsorted)[i];
             }
             int start = clock();
-            heapsort(temp_arr, data_size);
+
             int stop = clock();
 
             prec = stop - start;
@@ -96,8 +95,8 @@ namespace KAGU {
             throw unit_test_data_not_found();
         }
 
-        return true;
+        return false;
     }
 }
 
-#endif //ALGORITHMS_QUICKSORT_UT_H
+#endif //ALGORITHMS_K_TH_ELEMENT_UT_H
