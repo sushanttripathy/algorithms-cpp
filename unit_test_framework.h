@@ -32,10 +32,26 @@ namespace KAGU {
 
 #endif
 
+    class method_test_base {
+    public:
+        method_test_base() {
+
+        }
+
+        virtual ~method_test_base() {
+
+        }
+
+        virtual bool run() = 0;
+    };
+
 #define MAX_UNIT_TEST_RUNS_TO_SHOW 5
 
+#define DEBUG_CALCULATIONS false
+#define USE_RSS false
+
     template<typename X>
-    class method_test_with_complexity_analysis {
+    class method_test_with_complexity_analysis : public method_test_base {
     public:
         method_test_with_complexity_analysis(int n_start = 1000, int n_end = 100000, int n_step = 2000, int reruns = 3);
 
@@ -53,6 +69,8 @@ namespace KAGU {
 
         virtual bool run();
 
+        virtual void add_descriptive_strings(std::string init_message, std::string end_message);
+
     protected:
         int n_start, n_end, n_step, reruns;
 
@@ -61,6 +79,8 @@ namespace KAGU {
         virtual std::vector<X> *get_stored_inputs(int n_size, int run_num);
 
         std::map<int, std::map<int, std::vector<X>>> *data;
+
+        std::string init_message, end_message;
 
     };
 
@@ -85,7 +105,13 @@ namespace KAGU {
     template<typename X>
     bool method_test_with_complexity_analysis<X>::run() {
         this->initialize();
-        this->run_tests(this->n_start, this->n_end, this->n_step, this->reruns);
+        if (!this->init_message.length() && !this->end_message.length()) {
+            this->run_tests(this->n_start, this->n_end, this->n_step, this->reruns);
+        } else {
+            this->run_tests(this->n_start, this->n_end, this->n_step, this->reruns, 5, this->init_message,
+                            this->end_message);
+        }
+
         this->cleanup();
     }
 
@@ -113,7 +139,7 @@ namespace KAGU {
         }
 
         if (init_message == empty) {
-            std::cout << std::endl << "Beginning unit test runs " << std::endl;
+            std::cout << std::endl << "Beginning unit test runs with time complexity analyses " << std::endl;
         } else {
             std::cout << std::endl << init_message << std::endl;
         }
@@ -123,6 +149,7 @@ namespace KAGU {
         float completed_runs = 0.0;
         float progress = 0.0;
         int bar_width = 70;
+        double total_time = 0;
 
         for (int n = n_start; n <= n_end; n += n_step) {
             double cur_timing = 0;
@@ -137,9 +164,9 @@ namespace KAGU {
                 clock_stop = clock();
 
                 if (precision_time == -1)
-                    cur_timing += (clock_stop - clock_start) / double(CLOCKS_PER_SEC) * 1000;
+                    cur_timing += double(clock_stop - clock_start) / double(CLOCKS_PER_SEC) * 1000;
                 else
-                    cur_timing += precision_time;
+                    cur_timing += double(precision_time) / double(CLOCKS_PER_SEC) * 1000;
                 ++cur_run_count;
 
                 ++completed_runs;
@@ -155,7 +182,8 @@ namespace KAGU {
                 std::cout.flush();
 
             }
-            run_times[ind] = cur_timing / (double) cur_run_count;
+            run_times[ind] = cur_timing / (double) individual_set_reruns;
+            total_time += cur_timing;
             sizes[ind++] = (double) n;
         }
         std::cout << std::endl;
@@ -177,7 +205,8 @@ namespace KAGU {
 
 
         if (end_message == empty) {
-            std::cout << std::endl << "Finished unit test runs " << std::endl;
+            std::cout << std::endl << "Finished unit test runs, all tests passed in " << total_time << " ms"
+                      << std::endl;
         } else {
             std::cout << std::endl << end_message << std::endl;
         }
@@ -201,7 +230,8 @@ namespace KAGU {
             x[ind - 1] = (sizes[ind - 1] + sizes[ind]) / 2.0;
             y[ind - 1] = (run_times[ind] - run_times[ind - 1]) / (sizes[ind] - sizes[ind - 1]);
 
-//            std::cout << x[ind - 1] << " , " << y[ind - 1] << std::endl;
+            if (DEBUG_CALCULATIONS)
+                std::cout << x[ind - 1] << " , " << y[ind - 1] << std::endl;
 
             diff_log_n[ind - 1] = 1.0 / (x[ind - 1]);
             diff_n[ind - 1] = 1.0;
@@ -223,13 +253,17 @@ namespace KAGU {
         n2_coeff /= size;
         n3_coeff /= size;
 
-//        std::cout << "Coefficients: " << std::endl;
-//        std::cout << log_n_coeff << std::endl;
-//        std::cout << n_coeff << std::endl;
-//        std::cout << n_log_n_coeff << std::endl;
-//        std::cout << n2_coeff << std::endl;
-//        std::cout << n3_coeff << std::endl;
-//        std::cout << std::endl;
+        if(DEBUG_CALCULATIONS){
+            std::cout << "Coefficients: " << std::endl;
+            std::cout << log_n_coeff << std::endl;
+            std::cout << n_coeff << std::endl;
+            std::cout << n_log_n_coeff << std::endl;
+            std::cout << n2_coeff << std::endl;
+            std::cout << n3_coeff << std::endl;
+            std::cout << std::endl;
+
+        }
+
 
         for (ind = 0; ind < size - 1; ++ind) {
             diff_log_n[ind] *= log_n_coeff;
@@ -240,18 +274,38 @@ namespace KAGU {
         }
 
 
-        long double rss_log_n = get_absolute_residual_sum<long double>(diff_log_n, y, size - 1);
-        long double rss_n = get_absolute_residual_sum<long double>(diff_n, y, size - 1);
-        long double rss_n_log_n = get_absolute_residual_sum<long double>(diff_n_log_n, y, size - 1);
-        long double rss_n2 = get_absolute_residual_sum<long double>(diff_n2, y, size - 1);
-        long double rss_n3 = get_absolute_residual_sum<long double>(diff_n3, y, size - 1);
+        long double rss_log_n;
+        long double rss_n;
+        long double rss_n_log_n;
+        long double rss_n2;
+        long double rss_n3;
+
+        if(USE_RSS){
+            rss_log_n = get_residual_sum_of_squares<long double>(diff_log_n, y, size - 1);
+            rss_n = get_residual_sum_of_squares<long double>(diff_n, y, size - 1);
+            rss_n_log_n = get_residual_sum_of_squares<long double>(diff_n_log_n, y, size - 1);
+            rss_n2 = get_residual_sum_of_squares<long double>(diff_n2, y, size - 1);
+            rss_n3 = get_residual_sum_of_squares<long double>(diff_n3, y, size - 1);
+        }
+        else{
+            rss_log_n = get_absolute_residual_sum<long double>(diff_log_n, y, size - 1);
+            rss_n = get_absolute_residual_sum<long double>(diff_n, y, size - 1);
+            rss_n_log_n = get_absolute_residual_sum<long double>(diff_n_log_n, y, size - 1);
+            rss_n2 = get_absolute_residual_sum<long double>(diff_n2, y, size - 1);
+            rss_n3 = get_absolute_residual_sum<long double>(diff_n3, y, size - 1);
+        }
 
 
-//        std::cout << rss_log_n << std::endl;
-//        std::cout << rss_n << std::endl;
-//        std::cout << rss_n_log_n << std::endl;
-//        std::cout << rss_n2 << std::endl;
-//        std::cout << rss_n3 << std::endl;
+
+        if(DEBUG_CALCULATIONS){
+            std::cout << rss_log_n << std::endl;
+            std::cout << rss_n << std::endl;
+            std::cout << rss_n_log_n << std::endl;
+            std::cout << rss_n2 << std::endl;
+            std::cout << rss_n3 << std::endl;
+        }
+
+
 
         RUN_TIME_COMPLEXITY most_likely_runtime = LOG_N;
         long double min_rss = rss_log_n;
@@ -363,6 +417,237 @@ namespace KAGU {
 
     }
 
-}
+    template<typename X>
+    void method_test_with_complexity_analysis<X>::add_descriptive_strings(std::string init_message,
+                                                                          std::string end_message) {
+        this->init_message = init_message;
+        this->end_message = end_message;
+    }
+
+
+    template<typename X>
+    class method_test : public method_test_base {
+    public:
+        method_test();
+
+        virtual ~method_test();
+
+        virtual void initialize() = 0;
+
+        virtual void cleanup();
+
+        virtual bool run_one_test(int run_num, int &precision_time) = 0;
+
+        virtual bool run_tests(const std::string &init_message = empty, const std::string &end_message = empty);
+
+        virtual bool run();
+
+        virtual void add_descriptive_strings(std::string init_message, std::string end_message);
+
+    protected:
+        int n_runs;
+
+        virtual void store(int index, std::vector<X> &in);
+
+        virtual std::vector<X> *get_stored_inputs(int index);
+
+        std::map<int, std::vector<X>> *data;
+
+        std::string init_message, end_message;
+
+    };
+
+    template<typename X>
+    method_test<X>::method_test() {
+
+        this->n_runs = 0;
+        this->data = nullptr;
+    }
+
+    template<typename X>
+    method_test<X>::~method_test() {
+        if (this->data) {
+            delete this->data;
+            this->data = nullptr;
+        }
+    }
+
+    template<typename X>
+    void method_test<X>::cleanup() {
+
+    }
+
+    template<typename X>
+    bool
+    method_test<X>::run_tests(const std::string &init_message, const std::string &end_message) {
+
+        int size = this->n_runs;
+
+        double total_run_time = 0;
+        int ind = 0;
+
+        if (init_message == empty) {
+            std::cout << std::endl << "Beginning unit test runs " << std::endl;
+        } else {
+            std::cout << std::endl << init_message << std::endl;
+        }
+
+
+        float total_runs = (float) size;
+        float completed_runs = 0.0;
+        float progress = 0.0;
+        int bar_width = 70;
+
+        for (int n = 0; n <= this->n_runs; ++n) {
+            double cur_timing = 0;
+
+            int clock_start;
+            int clock_stop;
+            int precision_time = -1;
+
+
+            clock_start = clock();
+            this->run_one_test(n, precision_time);
+            clock_stop = clock();
+
+            if (precision_time == -1)
+                cur_timing += (clock_stop - clock_start) / double(CLOCKS_PER_SEC) * 1000;
+            else
+                cur_timing += precision_time / double(CLOCKS_PER_SEC) * 1000;
+
+
+            ++completed_runs;
+            progress = completed_runs / total_runs;
+            std::cout << "[";
+            int pos = bar_width * progress;
+            for (int g = 0; g < bar_width; ++g) {
+                if (g < pos) std::cout << "=";
+                else if (g == pos) std::cout << ">";
+                else std::cout << " ";
+            }
+            std::cout << "] " << int(progress * 100.0) << " %\r";
+            std::cout.flush();
+
+
+            total_run_time += cur_timing;
+        }
+        std::cout << std::endl;
+        if (end_message == empty) {
+            std::cout << std::endl << "Finished unit test runs, all tests passed in " << total_run_time << " ms"
+                      << std::endl;
+        } else {
+            std::cout << std::endl << end_message << std::endl;
+        }
+
+
+        return true;
+    }
+
+    template<typename X>
+    bool method_test<X>::run() {
+        this->initialize();
+        if (!this->init_message.length() && !this->end_message.length()) {
+            this->run_tests();
+        } else {
+            this->run_tests(this->init_message,
+                            this->end_message);
+        }
+        this->cleanup();
+        return true;
+    }
+
+    template<typename X>
+    void method_test<X>::store(int index, std::vector<X> &in) {
+        if (!this->data) {
+            this->data = new std::map<int, std::vector<X>>();
+        }
+
+        typename std::map<int, std::vector<X>>::iterator it1;
+
+        it1 = this->data->find(index);
+        if (it1 == this->data->end()) {
+            //insert the vector
+            this->data->insert(std::pair<int, std::vector<X>>(index, in));
+
+        } else {
+            //index entry exists
+            it1->second = in;
+        }
+
+    }
+
+    template<typename X>
+    std::vector<X> *method_test<X>::get_stored_inputs(int index) {
+        if (!this->data)
+            return nullptr;
+
+        typename std::map<int, std::vector<X>>::iterator it1;
+
+        it1 = this->data->find(index);
+        if (it1 != this->data->end()) {
+            return &(it1->second);
+        }
+
+        return nullptr;
+    }
+
+    template<typename X>
+    void method_test<X>::add_descriptive_strings(std::string init_message, std::string end_message) {
+        this->init_message = init_message;
+        this->end_message = end_message;
+    }
+
+
+    class class_test {
+    public:
+        class_test();
+
+        ~class_test();
+
+        virtual void initialize() = 0;
+
+        virtual void cleanup();
+
+        virtual void add_method_test(method_test_base *in);
+
+        virtual bool run();
+
+    protected:
+        std::vector<method_test_base *> *data;
+    };
+
+    class_test::class_test() {
+        this->data = new std::vector<method_test_base *>;
+    }
+
+    class_test::~class_test() {
+        if (this->data) {
+            delete this->data;
+            this->data = nullptr;
+        }
+    }
+
+    void class_test::add_method_test(method_test_base *in) {
+        if (this->data) {
+            this->data->push_back(in);
+        }
+    }
+
+    bool class_test::run() {
+        this->initialize();
+        if (this->data) {
+            typename std::vector<method_test_base *>::iterator it0;
+            for (it0 = this->data->begin(); it0 != this->data->end(); ++it0) {
+                (*it0)->run();
+            }
+        }
+        this->cleanup();
+        return true;
+    }
+
+    void class_test::cleanup() {
+
+    }
+};
 
 #endif //ALGORITHMS_UNIT_TEST_H

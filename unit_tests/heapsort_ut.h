@@ -86,7 +86,7 @@ namespace KAGU {
             heapsort(temp_arr, data_size);
             int stop = clock();
 
-            prec = stop - start;
+            prec = (stop - start);
 
             for (int i = 0; i < data_size; ++i) {
                 assert(temp_arr[i] == (*sorted)[i]);

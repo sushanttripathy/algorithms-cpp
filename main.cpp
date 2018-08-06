@@ -31,6 +31,7 @@
 #include "unit_tests/circular_queue_ut.h"
 #include "unit_tests/heapsort_ut.h"
 #include "unit_tests/quicksort_ut.h"
+#include "unit_tests/binary_search_tree_ut.h"
 
 using namespace KAGU;
 int main() {
@@ -53,4 +54,9 @@ int main() {
     std::cout << "Testing quicksort<int>" << std::endl;
     quicksort_test<int> quicksort_test1;
     quicksort_test1.run();
+
+
+    std::cout << "Testing binary_search_tree<int>" << std::endl;
+    binary_search_tree_ut<int> bst_test1;
+    bst_test1.run();
 }
