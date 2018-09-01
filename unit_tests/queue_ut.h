@@ -8,7 +8,7 @@
 #include <map>
 #include <random>
 #include <cassert>
-#include "../queue.h"
+#include "../data_structures/queue.h"
 #include "../unit_test_framework.h"
 
 namespace KAGU {

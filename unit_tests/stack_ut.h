@@ -8,7 +8,7 @@
 #include <map>
 #include <random>
 #include <cassert>
-#include "../stack.h"
+#include "../data_structures/stack.h"
 #include "../unit_test_framework.h"
 namespace KAGU{
     template <typename X>

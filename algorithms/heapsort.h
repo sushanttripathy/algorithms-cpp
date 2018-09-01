@@ -5,7 +5,7 @@
 #ifndef ALGORITHMS_HEAPSORT_H
 #define ALGORITHMS_HEAPSORT_H
 
-#include "heap.h"
+#include "../data_structures/heap.h"
 
 namespace KAGU {
     template <typename X> void heapsort(X *arr, size_t arr_size, bool sort_ascending = true){

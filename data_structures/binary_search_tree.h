@@ -10,7 +10,7 @@
 #include <exception>
 #include <iostream>
 //#include "quicksort.h"
-#include "heapsort.h"
+#include "../algorithms/heapsort.h"
 
 namespace KAGU {
 

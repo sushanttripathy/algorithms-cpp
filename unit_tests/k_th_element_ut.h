@@ -8,7 +8,7 @@
 #include <map>
 #include <random>
 #include <cassert>
-#include "../k_th_element.h"
+#include "../algorithms/k_th_element.h"
 #include "../unit_test_framework.h"
 #include <algorithm>
 

@@ -3,28 +3,28 @@
 //
 
 #include <iostream>
-#include "circular_queue.h"
-#include "queue.h"
-#include "stack.h"
-#include "heap.h"
-#include "priority_queue.h"
-#include "steins_gcd.h"
-#include "heapsort.h"
-#include "quicksort.h"
-#include "binary_search_tree.h"
-#include "red_black_bst.h"
-#include "interval_tree.h"
-#include "segment_tree.h"
-#include "double_ended_queue.h"
-#include "binary_indexed_tree.h"
-#include "dynamic_heap.h"
+#include "data_structures/circular_queue.h"
+#include "data_structures/queue.h"
+#include "data_structures/stack.h"
+#include "data_structures/heap.h"
+#include "data_structures/priority_queue.h"
+#include "algorithms/steins_gcd.h"
+#include "algorithms/heapsort.h"
+#include "algorithms/quicksort.h"
+#include "data_structures/binary_search_tree.h"
+#include "data_structures/red_black_bst.h"
+#include "data_structures/interval_tree.h"
+#include "data_structures/segment_tree.h"
+#include "data_structures/double_ended_queue.h"
+#include "data_structures/binary_indexed_tree.h"
+#include "data_structures/dynamic_heap.h"
 
 #include <ctime>
 #include <random>
 #include <queue>
 #include <stack>
 #include <cassert>
-#include "trie.h"
+#include "data_structures/trie.h"
 
 #include "unit_tests/stack_ut.h"
 #include "unit_tests/queue_ut.h"
@@ -32,6 +32,8 @@
 #include "unit_tests/heapsort_ut.h"
 #include "unit_tests/quicksort_ut.h"
 #include "unit_tests/binary_search_tree_ut.h"
+
+#include "algorithms/k_th_element.h"
 
 using namespace KAGU;
 int main() {

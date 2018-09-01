@@ -6,7 +6,7 @@
 #define ALGORITHMS_QUICKSORT_H
 
 #include <stdlib.h>
-#include "stack.h"
+#include "../data_structures/stack.h"
 namespace KAGU{
 
 

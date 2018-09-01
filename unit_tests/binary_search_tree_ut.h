@@ -8,7 +8,7 @@
 #include <map>
 #include <random>
 #include <cassert>
-#include "../binary_search_tree.h"
+#include "../data_structures/binary_search_tree.h"
 #include "../unit_test_framework.h"
 #include <algorithm>
 

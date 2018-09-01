@@ -8,6 +8,11 @@
 template <typename X, typename Y, typename Z>
 struct triplet_type1{
 public:
+
+    triplet_type1(){
+
+    }
+
     triplet_type1(X x, Y y, Z z){
         this->x = x;
         this->y = y;

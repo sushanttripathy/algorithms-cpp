@@ -11,7 +11,7 @@
 #include <random>
 #include <cassert>
 #include "../unit_test_framework.h"
-#include "../heapsort.h"
+#include "../algorithms/heapsort.h"
 
 namespace KAGU {
     template<typename X>

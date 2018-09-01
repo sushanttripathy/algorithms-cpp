@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "binary_search_tree.h"
 //#include "quicksort.h"
-#include "heapsort.h"
+#include "../algorithms/heapsort.h"
 
 
 namespace KAGU {

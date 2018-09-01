@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
-#include "basic_statistics.h"
+#include "algorithms/basic_statistics.h"
 
 namespace KAGU {
 #ifndef EMPTY_STRING

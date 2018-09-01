@@ -8,7 +8,7 @@
 #include <map>
 #include <random>
 #include <assert.h>
-#include "../circular_queue.h"
+#include "../data_structures/circular_queue.h"
 #include "../unit_test_framework.h"
 
 namespace KAGU {
