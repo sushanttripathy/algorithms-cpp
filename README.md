@@ -1,9 +1,9 @@
 # algorithms-cpp
-Implementations of commonly used algorithms in C++
+Implementations of commonly used algorithms and data structures in C++
 
-For instances of use please see main.cpp. 
+For instances of use please see unit-tests referenced in main.cpp. 
 
-Almost all of these are templated classes with easy to understand method names (most of the methods follow standard nomenclature). There is no library dependency of any sort; these sources have been tested on gcc 6.4. They will also work with MingW compilers.
+Almost all of these are templated classes with easy to understand method names (most of the methods follow standard and/or self-evident of usage nomenclature). There is no library dependency of any sort; these sources have been tested on gcc 6.4. They will also work with MingW compilers.
 
 Implementations of note are :
 
