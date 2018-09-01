@@ -137,8 +137,8 @@ namespace KAGU {
 
             if (size <= MEDIAN_OF_MEDIANS_SUBLIST_SIZE) {
                 quicksort(input_copy, size);
-                output = input_copy[k - 1];
-
+//                output = input_copy[k - 1];
+                output = input_copy[k];
                 if (make_copy)
                     free(input_copy);
                 return output;
@@ -191,13 +191,16 @@ namespace KAGU {
 
             if (i > j) {
                 swap<int>(i, j);
+                // Just swapping the indices (the actual numbers) to make i < j
+                // i is the left index that is not equal to i+1'th number; j is the right index that's not equal to
+                // j-1'th number; numbers i+1 through j-1 are equal
             }
 
-            if (i + 1 <= k && k <= j) {
+            if (i + 1 <= k && k <= j - 1) {
                 output = pivot;
             } else if (k < i + 1) {
                 output = median_of_medians < X > (input_copy, i + 1, k, false);
-            } else if (k > j) {
+            } else if (k > j - 1) {
                 output = median_of_medians < X > (input_copy + j, size - j, k - j, false);
             }
 

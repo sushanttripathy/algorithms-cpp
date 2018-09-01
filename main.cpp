@@ -32,11 +32,14 @@
 #include "unit_tests/heapsort_ut.h"
 #include "unit_tests/quicksort_ut.h"
 #include "unit_tests/binary_search_tree_ut.h"
+#include "unit_tests/red_black_bst_ut.h"
+#include "unit_tests/k_th_element_mom_ut.h"
 
 #include "algorithms/k_th_element.h"
 
 using namespace KAGU;
 int main() {
+
     std::cout << "Testing stack<int>" << std::endl;
     stack_push_pop_test<int> stack_test1;
     stack_test1.run();
@@ -61,4 +64,13 @@ int main() {
     std::cout << "Testing binary_search_tree<int>" << std::endl;
     binary_search_tree_ut<int> bst_test1;
     bst_test1.run();
+
+    std::cout << "Testing red-black binary_search_tree<int>" << std::endl;
+    red_black_bst_ut<int> rb_bst_ut1;
+    rb_bst_ut1.run();
+
+    std::cout << "Testing get_kth_element_1d<int>" << std::endl;
+    k_th_element_mom_ut<int> k_th_element_mom_ut1;
+    k_th_element_mom_ut1.run();
+
 }
