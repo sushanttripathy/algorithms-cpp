@@ -30,7 +30,7 @@ namespace KAGU {
 
         bool full();
 
-        X operator[](int index);
+        X& operator[](int index);
 
     private:
         X *arr;
@@ -156,7 +156,7 @@ namespace KAGU {
 #endif
 
     template<typename X>
-    X circular_queue<X>::operator[](int index) {
+    X& circular_queue<X>::operator[](int index) {
         if (this->contents > 0) {
             if (index >= 0 && index < this->contents) {
                 return this->arr[(this->start + index)%this->capacity];

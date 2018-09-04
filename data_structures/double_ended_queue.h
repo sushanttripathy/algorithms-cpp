@@ -67,6 +67,17 @@ namespace KAGU{
         return (X) 0;
     }
 
+#ifndef ACCESSING_OUT_OF_BOUNDS_QUEUE_INDEX_DQ
+#define ACCESSING_OUT_OF_BOUNDS_QUEUE_INDEX_DQ
+
+    struct accessing_out_of_bounds_queue_index_dq : public std::exception {
+        const char *what() const throw() {
+            return "Error trying to access out of bounds queue index for a dynamic queue.";
+        }
+    };
+
+#endif
+
     template<typename X>
     X &KAGU::double_ended_queue<X>::operator[](int ind) {
         if(ind >= 0 && ind < this->num_nodes){
@@ -89,6 +100,7 @@ namespace KAGU{
         }
         else{
             //throw not available exception here
+            throw accessing_out_of_bounds_queue_index_dq();
         }
 
     }

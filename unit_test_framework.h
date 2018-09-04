@@ -5,6 +5,9 @@
 #ifndef ALGORITHMS_UNIT_TEST_H
 #define ALGORITHMS_UNIT_TEST_H
 
+//TODO: Smooth the data-size vs. run-time data points?
+// Might help with the random noise in the BST O estimations
+
 #include <stdlib.h>
 #include <ctime>
 #include <iostream>

@@ -38,6 +38,7 @@
 #include "algorithms/k_th_element.h"
 
 using namespace KAGU;
+
 int main() {
 
     std::cout << "Testing stack<int>" << std::endl;
@@ -49,7 +50,7 @@ int main() {
     queue_test1.run();
 
     std::cout << "Testing circular_queue<int>" << std::endl;
-    circular_queue_push_pop_test<int>circular_queue_test1;
+    circular_queue_push_pop_test<int> circular_queue_test1;
     circular_queue_test1.run();
 
     std::cout << "Testing heapsort<int>" << std::endl;
@@ -59,7 +60,6 @@ int main() {
     std::cout << "Testing quicksort<int>" << std::endl;
     quicksort_test<int> quicksort_test1;
     quicksort_test1.run();
-
 
     std::cout << "Testing binary_search_tree<int>" << std::endl;
     binary_search_tree_ut<int> bst_test1;
@@ -72,5 +72,6 @@ int main() {
     std::cout << "Testing get_kth_element_1d<int>" << std::endl;
     k_th_element_mom_ut<int> k_th_element_mom_ut1;
     k_th_element_mom_ut1.run();
+
 
 }
