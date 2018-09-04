@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++11 -g   CMakeFiles/algorithms.dir/main.cpp.o CMakeFiles/algorithms.dir/algorithms/steins_gcd.cpp.o  -o algorithms 
